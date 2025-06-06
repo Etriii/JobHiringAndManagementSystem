@@ -1,0 +1,3023 @@
+import java.util.*;
+import java.text.DecimalFormat;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+
+public class JobHiringAndManagementSystem {
+
+    public static void main(String[] args) throws IOException {
+
+        Path file1 = Paths.get("JobFinderAndManagementSystemFiles\\EMPLOYERS ACCOUNT.txt");
+        Path file2 = Paths.get("JobFinderAndManagementSystemFiles\\EMPLOYEES ACCOUNT.txt");
+        Path file3 = Paths.get("JobFinderAndManagementSystemFiles\\HIRED EMPLOYEES.txt");
+
+        try {
+            Files.delete(file1);
+            Files.delete(file2);
+            Files.delete(file3);
+
+        } catch (IOException e) {
+            System.out.println("FAILED TO DELETE");
+        }
+
+        Scanner num = new Scanner(System.in);
+        Scanner string = new Scanner(System.in);
+        DecimalFormat rounded = new DecimalFormat("#.#########");
+        FileWriter fwR = new FileWriter("JobFinderAndManagementSystemFiles/EMPLOYERS ACCOUNT.txt",
+                true);
+        PrintWriter accountsR = new PrintWriter(fwR, true);
+        FileWriter fwE = new FileWriter("JobFinderAndManagementSystemFiles/EMPLOYEES ACCOUNT.txt",
+                true);
+        PrintWriter accountsE = new PrintWriter(fwE, true);
+        FileWriter fwHE = new FileWriter("JobFinderAndManagementSystemFiles/HIRED EMPLOYEES.txt",
+                true);
+        PrintWriter accountHE = new PrintWriter(fwHE, true);
+        FileWriter realTimeW = new FileWriter(
+                "JobFinderAndManagementSystemFiles/TIMES WHERE PROGRAM WEHRE USED.txt", true);
+        PrintWriter realTime = new PrintWriter(realTimeW, true);
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // LOG IN
+        int[] invLength = new int[100];
+        String[][] jobNameInv = new String[100][100];
+        String[][] jobIndustryInv = new String[100][100];
+        String[][] jobEmployerInv = new String[100][100];// once ma accept ipang erase na ang uban except sa imong gi accept
+
+        boolean[] status = new boolean[100];
+        String[] hiredJob = new String[100]; // mao ning gi get natu didtu sa hiring najud
+        String[] hiredIndustry = new String[100];// same ra
+        String[] hiredBy = new String[100];// same ra
+
+        boolean[] statusInterview = new boolean[100];// if true that means gi sched ka og interview
+        String[] interTime = new String[100];// mao ni sila hantud sa interBy ang e inout sa employer para sa imong
+                                             // interview
+        String[] gmeetLink = new String[100];
+        String[] interJob = new String[100];
+        String[] interIndustry = new String[100];
+        String[] interBy = new String[100];
+
+        int[] sentApp = new int[100];// per account kunbg pila na ilang na send na applications
+        String[][] employerName = new String[100][100]; // kung kinsa nga employer ilang gi applyan
+        int[][] industry = new int[100][100];// kung unsa na industry
+        String[][] sentJobName = new String[100][100];// tas panagalan sa job
+
+        // SEARCH A JOB
+        /*
+        
+         */
+        String[] educationalAttainment = { "NONE DUE TO SOME CIRCUMSTANCES", "ELEMENTARY GRADUATE",
+                "JUNIOR HIGHSCHOOL GRADUATE",
+                "SENIOR HIGHGSCHOOL GRADUATE", "COLLEGE GRADUATE", "MASTER'S DEGREE HOLDER", "PROFESSIONAL" };
+
+        // CREATE AN ACCOUNT
+        int lengthACC = 0;// employee legnth sa account created or existing
+        String[] usernames = new String[100];// mga infos sa imong accounts
+        String[] passwords = new String[100];
+        String[] firstName = new String[100];
+        String[] middleName = new String[100];
+        String[] lastName = new String[100];
+        int[] age = new int[100];
+        String[] sex = new String[100];
+        String[] address = new String[100];
+        String[] email = new String[100];
+        long[] phone = new long[100];
+        int[] educAtt = new int[100];
+        String[] workExp = new String[100];
+        String[] carObjective = new String[100];
+        String[] strenghts = new String[100];
+        // END
+
+        // ENTER AS RECRUITER
+        String[] industryShort = { "Computer and Information Technology Jobs", "Health Care", "Digital Marketing" };// gina gamit  ni  siya  as  shortcut  kay  index  raba  kwaon  sa  industry  so  eh  call  nalang  ni  using  those  indexes
+                                                                                                   
+
+        int[] citLength = new int[100];// kung pila na ang na post per account
+        // [ACCOUNT][INDUSTRY][JOB INFO][MGA SULOD]
+        String[][][][] cit = new String[100][3][4][100];// JOB NAME, JOB DESCRIPTION, QUALIFICATION, LOCATION
+        int[][][][] citNum = new int[100][3][3][100]; // MAXIMUM EMPLOYEE, SALARY, AGE REQUIREMENT
+        int jobPostedLength = 0;
+        String[] jobPOSTED = new String[100];
+
+        // END
+        //
+        //
+        // ENTER AS ADMIN
+        double profit = 0;
+
+        String adminUsername = "Administrator";
+        String adminPassword = "admin@123";
+
+        int recAccLength = 0;// employers ;length or exising accounts
+        int jobPostLimit = 10;// kung pila lang taman ang pwede i post job sa employer
+        int[] recAccChance = new int[100];// chance ni nila, after mag post mo deecrement ang jobPostLimit sa specific
+                                          // nga account. so if ma zero dli na ka post
+        double[] depositLE = new double[100];// balance
+
+        String[] recAccUsernames = new String[100];// usernmaes sa employer
+        String[] recAccPasswords = new String[100];// passwords nila
+        String[] recAccName = new String[100];// ilang pangalan tunbg Last Name, First Name Middle Name
+        String[] wantedFirstname = new String[100];// first name sa mga kriminal, gamiton ni pang loop e check ang mga
+                                                   // employee if wanted sila
+        String[] wantedLastname = new String[100];// same sa fisrtname
+        int wantedLength = 0;// kubng pila na na post nimo nga mga wanted
+
+        // for initial use
+        // invLength[0] = 5;
+        //
+        // lengthACC = 1;
+        //
+        // usernames[0] = "a";
+        // passwords[0] = "a";
+        //
+        // jobNameInv[0][0] = "manager";
+        // jobIndustryInv[0][0] = "digital marketing";
+        // jobEmployerInv[0][0] = "Aparece";
+        //
+        // jobNameInv[0][1] = "job1";
+        // jobIndustryInv[0][1] = "digital marketing";
+        // jobEmployerInv[0][1] = "Aparece";
+        //
+        // jobNameInv[0][2] = "job 4";
+        // jobIndustryInv[0][2] = "Digital marketing";
+        // jobEmployerInv[0][2] = "Aparece2";
+        //
+        // jobNameInv[0][3] = "JOb2";
+        // jobIndustryInv[0][3] = "digital marketing";
+        // jobEmployerInv[0][3] = "Aparece";
+        //
+        // jobNameInv[0][4] = "job 5";
+        // jobIndustryInv[0][4] = "Digital marketing";
+        // jobEmployerInv[0][4] = "Aparece2";
+        //
+        // recAccLength = 2;
+        //
+        // recAccUsernames[0] = "Alex";
+        // recAccPasswords[0] = "13";
+        //
+        // recAccUsernames[1] = "Alex2";
+        // recAccPasswords[1] = "13";
+        //
+        // recAccName[0] = "Aparece";
+        // recAccName[1] = "Aparece2";
+        // END
+        realTime.println("\n------------------------------------------------------");
+        realTime.println("\tSYSTEM OPENED: " + currentTime);
+
+        while (true) {
+            try {
+                System.out.println("\n\n--------ONLINE JOB FINDER SYSTEM--------\n");// sinugdanan sa tanan
+                System.out.println("1. LOG IN");
+                System.out.println("2. CREATE AN ACCOUNT");
+                System.out.println("3. SEARCH A JOB");
+                System.out.println("4. LOG IN AS JOB EMPLOYER");
+                System.out.println("5. LOG IN AS ADMIN");
+                System.out.println("0. EXIT");
+                System.out.print("ENTER YOUR CHOICE: ");
+
+                int choice = num.nextInt();
+
+                if (choice < 0 || choice > 5) {// if bulay og ang user taka rag input dapat 1 to 6 lang
+                    System.out.println("Please enter integers that range from 0 to 5");
+                    continue;
+                } // pero if letter mo ditsu ni sa catch then e usab ra ang loop then reset kay
+                  // outer loop mani
+
+                switch (choice) {
+                    // log in
+                    case 1:
+                        boolean yeah2 = true;
+                        while (yeah2) {
+                            try {
+                                System.out.println("\n--------LOG IN--------\n");
+
+                                System.out.print("ENTER USERNAME: ");
+                                String testUsername = string.nextLine();// dli ni final, bale gamiton rani for
+                                                                        // comparisson
+                                System.out.print("ENTER PASSWORD: ");
+                                String testPassword = string.nextLine();// dli ni final, bale gamiton rani for
+                                                                        // comparisson
+
+                                int indexL = -1;
+
+                                for (int i = 0; i < usernames.length; i++) {// loop para isa2 hon ang usernames og passwords if tuyga ba sa katung nasa taas nga gi input nimo for log in
+                                                                           
+                                                                           
+                                    if (usernames[i].equals(testUsername) && passwords[i].equals(testPassword)) {// if // mag // equal // then // true // ang // duha // taht // means // nakita // imong // account // in // that // specific // index, // then // kwaon // to // nimo // ang // index // as // reference // para // ma // access // nimo // tanan // connected // atung // indexa
+                                                                                                                 
+                                        System.out.println("\nLOGIN SUCESSFULLY...");
+
+                                        indexL = i;
+
+                                        break;
+                                    }
+                                }
+
+                                // wala ta nag if == -1 dria kay if maka sugat man gud siyag null mo dittsu
+                                // siyag catch so didtu siya mo announce nga wala nakita ang account
+                                // so dli mabalaka nga mo ditsu dri after sa loop finding the account, kay dli
+                                // mo abot sa pinaka last sa null rajud siya taman kay mo error ditsu
+                                while (true) {
+
+                                    try {
+                                        System.out.println("\n-------------------");
+                                        System.out.println("1. CHECK STATUS");
+                                        System.out.println("2. EDIT ACCOUNT");
+                                        System.out.println("3. SHOW APPLICATIONS SENT");
+                                        System.out.println("4. VIEW JOB INVITATION");
+                                        System.out.println("5. LOG OUT");
+                                        System.out.print("ENTER YOUR CHOICE: ");
+                                        int choices2 = num.nextInt();
+
+                                        if (choices2 < 1 || choices2 > 5) {
+                                            continue;
+                                        }
+
+                                        switch (choices2) {
+
+                                            case 1:// checkk status
+                                                   // TO DO!!!!!!!
+                                                   // add if gysto natu e unhire atung kaugalingon pero e consider natu
+                                                   // tung mga na sent na natu (cancel since dpaata employer lang maka
+                                                   // unhire)
+                                                if (indexL != -1) {// naka != -1 siya kay naa man tay nakita nga account
+                                                                   // then gi get natu ang iyang index then gi rewrite
+                                                                   // sa indexL, so gamiton natu na ang indexx to call
+                                                                   // sa iyang mga kauban
+
+                                                    System.out.print("\n---STATUS: ");// if hired ba siya or dli, then
+                                                                                      // if hired e output niya kung asa
+                                                                                      // na idustry og trabaho then
+                                                                                      // kinsa nag hire sa imoha.
+                                                    if (status[indexL] == false) {
+                                                        System.out.println("NOT HIRED---");
+                                                    } else {
+                                                        System.out.println("HIRED---");
+                                                        System.out.println("--------------------");
+                                                        System.out.println("HIRED BY: " + hiredBy[indexL]);
+                                                        System.out.println("INDUSTRY: " + hiredIndustry[indexL]);
+                                                        System.out.println("NAME OF THE JOB: " + hiredJob[indexL]);
+                                                        System.out.println("--------------------\n");
+
+                                                        // TO DO!!!!!!!
+                                                        // add kung asa na company (cancel)
+                                                    }
+                                                    if (statusInterview[indexL] == true) {// check na niya if gi settan
+                                                                                          // kag interview, dli mabalaka
+                                                                                          // nga ma show ang kuwnare nag
+                                                                                          // set siyag interview then gi
+                                                                                          // hire ka after so dli balaka
+                                                                                          // nga diba na true first ang
+                                                                                          // interview then na true ang
+                                                                                          // hire so supposedly ma show
+                                                                                          // ang hire og inteview, pero
+                                                                                          // after e hire under
+                                                                                          // interview man ka or wala e
+                                                                                          // false na niya dayun; so dli
+                                                                                          // ma read ang interview if ma
+                                                                                          // hire na
+                                                        // NOTE MA READ RANI IF UNDER SIYA SA INTERVIEW
+                                                        System.out.println("ONLINE GMEET INTERVIEW SCHEDULE");
+                                                        System.out.println("\t--------------------");
+                                                        System.out.println("\tAPPOINTED BY: " + interBy[indexL]);
+                                                        System.out.println("\tDATE AND TIME: " + interTime[indexL]);
+                                                        System.out.println("\tGMEET LINK: " + gmeetLink[indexL]);
+                                                        System.out.println("\tNAME OF THE JOB: " + interJob[indexL]);
+                                                        System.out.println("\tINDUSTRY: " + interIndustry[indexL]);
+                                                        System.out.println("\t--------------------\n");
+
+                                                    }
+                                                    // output tanna personal information base sa index nga nakita asa
+                                                    // imong account sa loop sa taas nga gi created during the account
+                                                    // creation process
+                                                    System.out.println("Name: " + firstName[indexL] + " "
+                                                            + middleName[indexL] + " " + lastName[indexL]);
+                                                    System.out.println("Age: " + age[indexL]);
+                                                    System.out.println("Sex: " + sex[indexL]);
+                                                    System.out.println("Address: " + address[indexL]);
+                                                    System.out.println("Email: " + email[indexL]);
+                                                    System.out.println("Phone Number: " + phone[indexL]);
+                                                    System.out.println("Educational Attainment: "
+                                                            + educationalAttainment[educAtt[indexL]]);
+                                                    System.out.println("Work Experience: " + workExp[indexL]);
+                                                    System.out.println("Carreer Objective: " + carObjective[indexL]);
+                                                    System.out.println("Strengths: " + strenghts[indexL]);
+
+                                                }
+                                                continue;
+
+                                            case 2:// edit account
+
+                                                while (true) {// 3 lang e edit kay taas if katu tanan
+                                                    try {
+                                                        System.out.println("---EDIT ACCOUNT---");
+                                                        System.out.println(
+                                                                "NOTE: THE FOLLOWINGS ARE THE ONLY INFORMATION WHICH ARE EDITABLE ");
+                                                        System.out.println("1. WORK EXPERIENCE");
+                                                        System.out.println("2. CAREER OBJECTIVES");
+                                                        System.out.println("3. STRENGTHS");
+                                                        System.out.println("4. RETURN");
+                                                        System.out.print("ENTER YOUR CHOICE: ");
+                                                        int choices = num.nextInt();
+
+                                                        if (choices == 1 || choices == 2 || choices == 3
+                                                                || choices == 4) {
+
+                                                            switch (choices) {
+                                                                case 1:
+                                                                    System.out.print("EDIT WORK EXPERIENCCE: ");
+                                                                    workExp[indexL] = string.nextLine();
+                                                                    System.out.println(
+                                                                            "UPDATE WORK EXPERIENCE SUCCESSFULY!\n");
+                                                                    continue;
+
+                                                                case 2:
+                                                                    System.out.print("EDIT CAREER OBJECTIVES: ");
+                                                                    carObjective[indexL] = string.nextLine();
+                                                                    System.out.println(
+                                                                            "UPDATE WORK EXPERIENCE SUCCESSFULY!\n");
+                                                                    continue;
+
+                                                                case 3:
+
+                                                                    System.out.print("EDIT STRENGTHS: ");
+                                                                    strenghts[indexL] = string.nextLine();
+                                                                    System.out
+                                                                            .println("UPDATE STRENGTH SUCCESSFULY!\n");
+                                                                    continue;
+
+                                                                default:
+                                                                    break;
+
+                                                            }
+
+                                                        }
+
+                                                    } catch (Exception e) {
+                                                        num.nextLine();
+                                                    }
+                                                    System.out.println("");
+                                                    break;
+                                                }
+
+                                            case 3:// application sent
+
+                                                System.out.println("\n---APPLICATIONS SENT---");
+
+                                                // output tanang mga gipang applyan base sa imong index sa log in
+                                                if (sentApp[indexL] == 0) {// if way sulod
+                                                    System.out.println("No Application sent");
+                                                    continue;
+                                                } else {// else if naay sulod
+
+                                                    for (int i = 0; i < sentJobName.length; i++) {// NOTE MAO NING GI
+                                                                                                  // GET NATU DURING
+                                                                                                  // TUNG NAG LOG IN KA
+                                                                                                  // SA SEARCH JOB TUNG
+                                                                                                  // CONFIRMATION BTAW
+                                                                                                  // AFTER NIMO GI
+                                                                                                  // SEARCH ANG JOB
+                                                                                                  // NAME,SINCE NAKA 4
+                                                                                                  // NESTED LOOP MAN TU,
+                                                                                                  // makuha nimo kinsa
+                                                                                                  // na employee sa
+                                                                                                  // outer loop, then
+                                                                                                  // 2nd outer loop ang
+                                                                                                  // kung unsa na
+                                                                                                  // industry, then sa
+                                                                                                  // ika tulo 0 raman tu
+                                                                                                  // since name rmana
+                                                                                                  // atu kaialangan para
+                                                                                                  // ma bal an kung asa
+                                                                                                  // na index, then ang
+                                                                                                  // last kung unsa na
+                                                                                                  // column na place ang
+                                                                                                  // JOB NAME nga gi
+                                                                                                  // search nimo
+                                                        if (sentJobName[indexL][i] != null) {
+                                                            System.out.println(
+                                                                    "\tJob Employer: " + employerName[indexL][i]);
+                                                            System.out.println("\tJob Name: " + sentJobName[indexL][i]);
+                                                            System.out.println("\tIndustry: "
+                                                                    + industryShort[industry[indexL][i]]);
+                                                            System.out.println("\t\t---");
+
+                                                        }
+                                                    }
+
+                                                }
+
+                                                System.out.println("\nTOTAL: " + sentApp[indexL]);
+                                                System.out.println("");
+
+                                                // TO DO!!!!!
+                                                // type 1 to edit application ro else (cancel)
+                                                // type the job name you sent an applciataion to delete (done)
+                                                System.out.println("-------------------------------");
+                                                System.out.println("TYPE 1 to DELETE Applications you sent");
+                                                System.out.println("Type 2 or ANY to return");
+                                                System.out.print("YOUR CHOICE: ");
+                                                String das = string.nextLine();
+
+                                                if ("1".equals(das)) {
+
+                                                    System.out.println(
+                                                            "\n----------------TO DELETE-----------------------");
+                                                    System.out.print("ENTER JOB NAME YOU SENT AN APPLICATION: ");
+                                                    String checkJobName = string.nextLine();
+
+                                                    for (int i = 0; i < sentJobName[0].length; i++) {
+                                                        if (sentJobName[indexL][i] != null && checkJobName
+                                                                .equalsIgnoreCase(sentJobName[indexL][i])) {
+                                                            sentJobName[indexL][i] = null;
+                                                            employerName[indexL][i] = null;
+                                                            industry[indexL][i] = 0;
+                                                            sentApp[indexL]--;
+
+                                                            System.out.println("A5"
+                                                                    + "PPLCIATION DELETED SUCCESSFULLY!..\n");
+                                                            break;
+                                                        }
+                                                    }
+
+                                                }
+
+                                                continue;
+
+                                            case 4:
+                                                System.out.println("\n------------JOB INVITATIONS---------------");
+
+                                                if (invLength[indexL] == 0) {
+                                                    System.out.println("NO INVITATIONS YET!..\n");
+                                                    continue;
+                                                }
+
+                                                for (int i = 0; i < invLength[indexL]; i++) {
+                                                    System.out.println("\tEMPLOYER: " + jobEmployerInv[indexL][i]);
+                                                    System.out.println("\tJOB NAME: " + jobNameInv[indexL][i]);
+                                                    System.out.println("\tINDUSTRY: " + jobIndustryInv[indexL][i]);
+                                                    System.out.println("      ---------------------------------");
+
+                                                }
+
+                                                System.out.println("\nTOTAL: " + invLength[indexL]);
+
+                                                System.out.println("\n-----------CHOOSE ONE-------------");
+                                                System.out.println("TYPE 1 to SERACH JOB NAME WHICH TO ACCEPT");
+                                                System.out.println("TYPE 2 or ANY to RETURN");
+                                                System.out.print("YOUR CHOICE: ");
+                                                String choiceCO = string.nextLine();
+
+                                                if ("1".equals(choiceCO)) {
+                                                    System.out.println("\n---------------------");
+
+                                                    while (true) {
+                                                        System.out.print("ENTER JOB NAME: ");
+                                                        String checkJobName = string.nextLine();
+
+                                                        boolean jobFOUND = false;
+                                                        for (int i = 0; i < jobNameInv[0].length; i++) {// if ma hire e
+                                                                                                        // deelte mga
+                                                                                                        // gipang send
+                                                                                                        // og ng invite
+                                                                                                        // sa imoha
+                                                            if (jobNameInv[indexL][i] != null && jobNameInv[indexL][i]
+                                                                    .equalsIgnoreCase(checkJobName)) {
+
+                                                                status[indexL] = true;
+                                                                hiredJob[indexL] = jobNameInv[indexL][i];
+                                                                hiredIndustry[indexL] = jobIndustryInv[indexL][i];
+                                                                hiredBy[indexL] = jobEmployerInv[indexL][i];
+                                                                System.out.println("\nHIRING ACCEPPTED!..\n");
+
+                                                                for (int j = 0; j < sentApp[indexL]; j++) {// erase
+                                                                                                           // tanang mga
+                                                                                                           // gipang
+                                                                                                           // applyan
+
+                                                                    sentJobName[indexL][j] = null;
+                                                                    industry[indexL][j] = 0;
+                                                                    employerName[indexL][j] = null;
+                                                                }
+                                                                sentApp[indexL] = 0;
+
+                                                                for (int j = 0; j < invLength[indexL]; j++) {// erase
+                                                                                                             // tanang
+                                                                                                             // nag
+                                                                                                             // invite
+                                                                                                             // sa imoha
+
+                                                                    jobNameInv[indexL][j] = null;
+                                                                    jobIndustryInv[indexL][j] = null;
+                                                                    jobEmployerInv[indexL][j] = null;
+
+                                                                }
+                                                                invLength[indexL] = 0;
+
+                                                                // add pud diay na mo minus sa employees needed
+                                                                for (int j = 0; j < cit.length; j++) {
+                                                                    for (int k = 0; k < cit[0].length; k++) {
+                                                                        for (int l = 0; l < cit[0][1][2].length; l++) {
+
+                                                                            if (cit[j][k][0][l] != null
+                                                                                    && cit[j][k][0][l].equalsIgnoreCase(
+                                                                                            hiredJob[indexL])) {
+                                                                                citNum[j][k][0][l]--;
+                                                                                break;
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                accountHE.println("\n------------------------");
+                                                                accountHE.println("EMPLOYEES NAME: " + lastName[indexL]
+                                                                        + ", " + firstName[indexL] + " "
+                                                                        + middleName[indexL]);
+                                                                accountHE.println("HIRED BY: " + hiredBy[indexL]);
+                                                                accountHE.println("JOB NAME: " + hiredJob[indexL]);
+                                                                accountHE.println("INDUSTRY: " + hiredIndustry[indexL]);
+                                                                accountHE.println("------------------------");
+
+                                                                jobFOUND = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (jobFOUND == false) {
+                                                            System.out.println("\nJOB NOT FOUND!!");
+                                                            System.out.println("TYPE 1 to RETRY");
+                                                            System.out.println("TYPE 2 or ANY to RETURN");
+                                                            System.out.print("YOUR CHOICE: ");
+                                                            String choiceJN = string.nextLine();
+
+                                                            if ("1".equals(choiceJN)) {
+                                                                continue;
+                                                            }
+
+                                                        }
+
+                                                        break;
+                                                    }
+
+                                                }
+
+                                                continue;
+                                            case 5:
+                                                yeah2 = false;
+                                                break;
+                                        }
+
+                                        break;
+                                    } catch (Exception e) {
+                                        num.nextLine();
+                                    }
+
+                                }
+
+                            } catch (Exception e) {// if maka suga tog null or bulay og ang user; letter gi input
+                                                   // instead integres
+
+                                int tryAgainLogIn;
+                                System.out.println("\nEmail or Password Doesnt Exist...");
+                                while (true) {
+                                    try {
+                                        System.out.println("TYPE 1 for TRY AGAIN or Type 2 or any numbers to go Back");
+                                        System.out.print("YOUR CHOICE IS: ");
+                                        tryAgainLogIn = num.nextInt();
+
+                                        break;
+                                    } catch (Exception e2) {
+                                        num.nextLine();
+                                    }
+                                }
+
+                                if (tryAgainLogIn == 1) {
+                                    continue;
+                                }
+                                System.out.println("");
+
+                                break;
+                            }
+
+                        }
+
+                        break;
+
+                    case 2:
+                        // create an account5
+                        while (true) {
+                            System.out.println("\n--------CREATE AN ACCOUNT--------\n");
+                            System.out.print("USERNAME: ");
+                            String createUserName = string.nextLine();// dli pani final, e use arani as comparison
+                            System.out.print("PASSWORD: ");
+                            String createPassword = string.nextLine();// dli pani final, e use arani as comparison
+
+                            boolean yeah = false;
+                            for (int i = 0; i < usernames.length; i++) {// E check if nag exist na ang username, same
+                                                                        // man gud sa fb nga lahi2 og usernames
+                                if (createUserName.equals(usernames[i])) {
+                                    System.out.println("This username is already use...");
+                                    break;
+                                }
+                                yeah = true;
+                            }
+
+                            if (yeah == true) {// then if approved imong username iog password, fill dayun kag
+                                               // informatios nimo
+
+                                System.out.println("\n---PERSONAL INFORMATION---");
+                                System.out.print("First name: ");
+                                firstName[lengthACC] = string.nextLine();
+                                System.out.print("Middle name: ");
+                                middleName[lengthACC] = string.nextLine();
+                                System.out.print("Last name: ");
+                                lastName[lengthACC] = string.nextLine();
+
+                                while (true) {
+                                    try {
+                                        System.out.print("Age: ");
+                                        age[lengthACC] = num.nextInt();
+                                        break;
+                                    } catch (Exception e) {
+                                        System.out.println("Only integers are allowed!");
+                                        System.out.println("");
+                                        num.nextLine();
+                                    }
+                                }
+
+                                while (true) {
+                                    System.out.print("Sex [Male][Female]: ");
+                                    sex[lengthACC] = string.nextLine();
+                                    if (sex[lengthACC].toLowerCase().equals("male")
+                                            || sex[lengthACC].toLowerCase().equals("female")) {
+                                        break;
+                                    }
+                                }
+
+                                System.out.print("Address: ");
+                                address[lengthACC] = string.nextLine();
+                                System.out.print("Email: ");
+                                email[lengthACC] = string.nextLine();
+                                while (true) {
+                                    try {
+                                        System.out.print("Phone: ");
+                                        phone[lengthACC] = num.nextLong();
+                                        break;
+                                    } catch (Exception e) {
+                                        System.out.println("only Integers are allowed!");
+                                        System.out.println("");
+                                        num.nextLine();
+                                    }
+                                }
+                                while (true) {
+                                    try {
+                                        System.out.println("\n--FOR APPLICATION---");
+                                        System.out.println("Highest/Current Educational Attainment: ");
+                                        System.out.println("0. NONE DUE TO SOME CIRCUMSTANCES");
+                                        System.out.println("1. ELEMENTARY GRADUATE");
+                                        System.out.println("2. JUNIOR HIGHSCHOOL GRADUATE");
+                                        System.out.println("3. SENIOR HIGHGSCHOOL GRADUATE");
+                                        System.out.println("4. COLLEGE GRADUATE");
+                                        System.out.println("5. MASTER'S DEGREE HOLDER");
+                                        System.out.println("6. PROFESSIONAL");
+                                        System.out.print("CHOOSE A NUMBER: ");
+                                        educAtt[lengthACC] = num.nextInt();
+                                        if (educAtt[lengthACC] >= 0 && educAtt[lengthACC] <= 6) {
+                                            break;
+                                        }
+
+                                        System.out.println("\nEnter Only ranging from 0 to 6");
+
+                                    } catch (Exception e) {
+                                        System.out.println("Only Integers are allowed!");
+                                        System.out.println("");
+                                        num.nextLine();
+                                    }
+                                }
+
+                                System.out.print("\nWork Experiences: ");
+                                workExp[lengthACC] = string.nextLine();
+                                System.out.print("Carrer Objectives: ");
+                                carObjective[lengthACC] = string.nextLine();
+                                System.out.print("Strengths: ");
+                                strenghts[lengthACC] = string.nextLine();
+                                // dungagan dri if part time ba or dli (cancel)
+
+                                System.out.println("");
+                                usernames[lengthACC] = createUserName;// if okay na ang tanan re butang dayun niya tung
+                                                                      // gi inpout nimo gaina dria
+                                passwords[lengthACC] = createPassword;
+                                accountsE.println("\n---------------------------------");
+                                accountsE.println("\tUsername: " + usernames[lengthACC]);
+                                accountsE.println("\tPassword: " + passwords[lengthACC]);
+                                lengthACC++;// plus 1 ang account lengths
+                                System.out.println("\nACCOUNT CREATED SUCCESSFULY...\n");
+
+                                break;
+
+                            }
+                        }
+
+                        break;
+                    case 3:
+                        // Job list
+                        while (true) {
+
+                            System.out.println("\n--------JOB LIST--------\n");// 3 industies lang sa
+
+                            boolean theresajob = false;
+
+                            for (int i = 0; i < recAccLength; i++) {// RECRUITERS ACCOUNT LENGTH - DRI MA GUESS KUNG
+                                                                    // KINSA NA ACCOUNT ANG NAG POST
+
+                                for (int j = 0; j < cit[0].length; j++) {// INDUSTRIES
+
+                                    for (int k = 0; k < 1; k++) {// 0 lang kay name raman atu need e check para makuha
+                                                                 // asa na index
+                                        for (int l = 0; l < cit[0][1][2].length; l++) {// 1 to 100 e cehck niya if naay
+                                                                                       // sulod, if != null that means
+                                                                                       // naa ysulod then e get niyang
+                                                                                       // KINSA NAG POST, UNSA NA
+                                                                                       // INDUSTRY, OG ASA NA COLUMN NA
+                                                                                       // SULOD.
+
+                                            if (cit[i][j][k][l] != null) {
+
+                                                if (citNum[i][j][k][l] == 0) {// pasabot ani if 0 na ang kailangan na e
+                                                                              // hire, so e continue poara dli na makita
+                                                                              // sa mga job hunters kay useless man
+                                                                              // japun since 0 naman ang kailangan so e
+                                                                              // skip ra niya sag naa siya na kita
+                                                    continue;
+                                                }
+
+                                                if (j == 0) {
+                                                    System.out.println("\nComputer and Information Technology Jobs\n");
+                                                } else if (j == 1) {
+                                                    System.out.println("\nHealth Care\n");
+                                                } else if (j == 2) {
+                                                    System.out.println("\nDigital Marketing\n");
+                                                }
+
+                                                // OUTPUT TANAN BASE SA KUNG ASA NANG HUNONG MGA IDNEXES SA LOOP KAY
+                                                // NAAY NAKITA DIDTOA
+                                                System.out.println("\tJob Name: " + cit[i][j][k][l] + "\t\tEMPLOYER: "
+                                                        + recAccName[i]);
+                                                System.out.println("\tJob Description: " + cit[i][j][k + 1][l]);
+                                                System.out.println("\tJob Qualification: " + cit[i][j][k + 2][l]);
+                                                System.out.println("\tJob Location: " + cit[i][j][k + 3][l]);
+                                                System.out.println("\tEmployee needed left: " + citNum[i][j][k][l]);
+                                                System.out.println("\tMonthly Salary: " + citNum[i][j][k + 1][l]);
+                                                System.out.println("\tAge Requirement: " + citNum[i][j][k + 2][l]);
+
+                                                theresajob = true;
+
+                                            }
+
+                                        }
+                                        System.out.println("");
+                                    }
+                                }
+                                System.out.println("");
+                            }
+
+                            if (theresajob == false) {// if way na read na job sa loop
+                                System.out.println("NO JOB YET!..\n");
+                                break;
+                            } else if (theresajob == true) {// SO IF NAAY JOB DITSU NA SA PANGUTANA DRI NA MAG SEARCH TO
+                                                            // APPLY SINCE NAKA SHOW NAMAN TANAN
+                                System.out.println("\n-----JOB SEARCH-----");
+
+                                System.out.print("Search Job name you want to apply: ");
+                                String jobSearch = string.nextLine();
+
+                                // DEFAULT SA NI TANAN DRI, NEGATIVE KAY 0 MAN MAG START
+                                int iJobS = -1;// UNSA NA ACCOUNT NAG POST
+                                int jJobS = -1;// UNSA NGA INDUSTRY
+                                int kJobS = -1;// 0 raman japun ni permi kay name raman gina search
+                                int lJobS = -1;// KUNG ASA NA COLUMN SA 1 to 100 na POST
+
+                                String jobName = null;// JOB NAME
+
+                                for (int i = 0; i < recAccLength; i++) {
+                                    for (int j = 0; j < cit[0].length; j++) {
+                                        for (int k = 0; k < 1; k++) {
+                                            for (int l = 0; l < cit[0][1][2].length; l++) {
+
+                                                if (cit[i][j][k][l] != null) {
+
+                                                    if (cit[i][j][k][l].equalsIgnoreCase(jobSearch)) {
+
+                                                        jobName = cit[i][j][k][l];
+                                                        iJobS = i;
+                                                        jJobS = j;
+                                                        kJobS = k;
+                                                        lJobS = l;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (iJobS != -1) {// SINCE DLI NAMAN EQUAL SA DEFAULT THAT MEANS NAAY NA READ ANG IMONG
+                                                  // GI SEARCH NA JOB< SO MANGUTANA OG LOG IN TO APPLY SA JOB BASE SA
+                                                  // IMONG GI SEARCH
+
+                                    while (true) {
+
+                                        try {
+                                            int indexSendL = -1;// mag loop to check as an aindex to na account or ga
+                                                                // exist ba
+
+                                            System.out.println("\n-FOR COMFIRMATION-");
+                                            System.out.println("Do you want to apply for the job "
+                                                    + cit[iJobS][jJobS][kJobS][lJobS] + " and posted by "
+                                                    + recAccName[iJobS]);
+                                            System.out.println(
+                                                    "Type 1 for YES to log in and send your Application form (Account informations)");
+                                            System.out.println("Type 2 for return");
+                                            System.out.print("YOUR CHOICE: ");
+                                            int choicesIJOB = num.nextInt();
+
+                                            if (choicesIJOB == 1) {// MAG LOG IN KAY PARA MA BAL AN NATU ASA SIYA E
+                                                                   // BUTANG ANG GI READ NATU KINSA NAG POST, INDUSTRY,
+                                                                   // OG JOB NAME THEN ASA NA INDEX
+
+                                                System.out.println("\n-LOG IN AS EMPLOYEE TO PROCEED-");
+                                                System.out.print("Username: ");// dli final as always
+                                                String checkUsername = string.nextLine();
+                                                System.out.print("Password: ");// dli final as always
+                                                String checkPassword = string.nextLine();
+
+                                                for (int i = 0; i < lengthACC; i++) {
+                                                    if (checkUsername.equals(usernames[i])
+                                                            && checkPassword.equals(passwords[i])) {
+                                                        indexSendL = i;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (status[indexSendL] == true) {// maong nag pa log in ta para e use
+                                                                                 // ang iyang index as guide to check
+                                                                                 // iyang mga conenctions, if HIRED NA
+                                                                                 // SIYA DLI NASIYA MAKA APPLY PAG LAHI
+                                                    System.out
+                                                            .println("You cannot Apply another job more than once!\n");
+                                                    break;
+                                                }
+
+                                                boolean alreadySent = false;
+
+                                                for (int i = 0; i < sentApp[indexSendL]; i++) {
+                                                    if (sentJobName[indexSendL][i].equalsIgnoreCase(jobName)) {
+                                                        System.out.println("YOU ALREADY APPLIED FOR THIS JOB!..\n");
+                                                        alreadySent = true;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (alreadySent == true) {
+                                                    continue;
+                                                }
+
+                                                // if oks tanan e get ang recruiters account name, unsa na industry, og
+                                                // pangalan sa account, para later on if gusto natu tan awon atung mga
+                                                // gipang applyan e call nalang natu
+                                                employerName[indexSendL][sentApp[indexSendL]] = recAccName[iJobS];
+                                                industry[indexSendL][sentApp[indexSendL]] = jJobS;
+                                                sentJobName[indexSendL][sentApp[indexSendL]] = jobName;
+
+                                                sentApp[indexSendL]++;// kung pila na imo na post++ para dli mag sapaw^2
+
+                                                System.out.println("Application sent");
+                                                break;
+
+                                            } else if (choicesIJOB == 2) {
+                                                break;
+                                            }
+
+                                        } catch (Exception e) {
+                                            System.out.println("\nUSERNAME OR PASSWORD DOESNT EXIST");
+                                            System.out.println("TYPE 1 to try Again");
+                                            System.out.println("TYPE 2 to return");
+                                            System.out.print("YOUR CHOICE: ");
+                                            int choicesISL = num.nextInt();
+                                            if (choicesISL == 1) {
+                                                continue;
+                                            } else if (choicesISL == 2) {
+                                                break;
+                                            }
+                                        }
+
+                                    }
+
+                                } else if (iJobS == -1) {// if wlaay na read na gi search nimo na JOB
+                                    System.out.println("JOB DOESNT EXIST....");
+                                    System.out.println("TYPE 1 to Try Again");
+                                    System.out.println("TYPE 2 to return");
+                                    System.out.print("YOUR CHOICE: ");
+                                    int iJOBSchoice = num.nextInt();
+
+                                    if (iJOBSchoice == 2) {
+                                        break;
+                                    } else if (iJOBSchoice == 1) {
+                                        continue;
+                                    }
+
+                                }
+                            }
+                            break;
+                        }
+
+                        break;
+
+                    case 4:
+                        // LOG IN AS EMPLOYER
+                        boolean yeah4 = true;
+                        while (yeah4) {
+                            System.out.println("\n-------LOG IN AS EMPLOYER -------\n");
+                            System.out.print("Employers Username: ");// dli final
+                            String checkEU = string.nextLine();
+                            System.out.print("Employers Password: ");// dli final
+                            String checkEP = string.nextLine();
+
+                            int indexLE = -1;// GAMITON NATU NI UNYA, CHECK LANG ANG PROCESS NAA DIDTU WHY GAMITON NATU
+                                             // NI
+
+                            for (int i = 0; i < recAccLength; i++) {
+                                if (recAccUsernames[i].equals(checkEU) && recAccPasswords[i].equals(checkEP)) {
+
+                                    System.out.println("LOG IN SUCCESSFULY!\n");
+                                    indexLE = i;
+                                    break;
+                                }
+                            }
+
+                            // Post a job
+                            if (indexLE != -1) {
+
+                                while (true) {
+                                    try {
+                                        // TO DO!!!!!
+                                        // INCLUDE PUD OG NGA SHOW IF E SHOW ANG MGA NA HIRED NA NIMO (done)
+                                        // CONSIDER IF E FIRE NIMO HAHA (done naa sa 6)
+
+                                        System.out.println("\n-------RECRUITER PORTAL-------");
+                                        System.out.println("1. Check my Published Jobs");
+                                        System.out.println("2. Check Applications");
+                                        System.out.println("3. Post a Job");
+                                        System.out.println("4. Delete Published Jobs");
+                                        System.out.println("5. Deposit");
+                                        System.out.println("6. Show All Hired Employees");
+                                        System.out.println("7. Show All Employees Scheduled for interview");
+                                        System.out.println("8. Show Job Invitations Sent");
+                                        System.out.println("9. LOG OUT");
+                                        System.out.print("YOUR CHOICE IS: ");
+                                        int choices4 = num.nextInt();
+                                        num.nextLine();
+
+                                        switch (choices4) {
+
+                                            case 1:
+                                                System.out.println("\n-------PUBLISHED JOBS-------");
+                                                /*
+                                                 * DONT MIND THIS KAY DAI NI TUNG LIBOGAN PA GA CEHCK^2 DRi
+                                                 * [ACCOUNT][INDUSTRY][JOB INFO][MGA SULOD]
+                                                 * String[][][][] cit = new String[100][3][4][100];//JOB NAME, JOB
+                                                 * DESCRIPTION, QUALIFICATION, LOCATION
+                                                 * int[][][][] citNum = new int[100][3][3][100]; //MAXIMUM EMPLOYEE,
+                                                 * SALARY, AGE REQUIREMENT
+                                                 */
+
+                                                // SINCE KABALO NAMAN TA SA INDEX SA EMPLOYER IPANG OUTPUT NALANG NATU
+                                                // TU ISA^2 YANG MGA GIPANG POST EACH INDUSTRY
+                                                boolean foundJobPosted = false;
+
+                                                for (int i = 0; i < cit[0].length; i++) {
+                                                    if (i == 0) {
+                                                        System.out
+                                                                .println("Computer and Information Technology Jobs\n");
+                                                    } else if (i == 1) {
+                                                        System.out.println("Health Care\n");
+                                                    } else if (i == 2) {
+                                                        System.out.println("Digital Marketing\n");
+                                                    }
+
+                                                    for (int j = 0; j < 1; j++) {
+
+                                                        for (int k = 0; k < cit[0][1][2].length; k++) {
+
+                                                            if (cit[indexLE][i][j][k] != null) { // so if naay makita
+                                                                                                 // gamiton ng mga
+                                                                                                 // indexes kung asa nag
+                                                                                                 // stop to call those
+                                                                                                 // things in relate or
+                                                                                                 // same index sa asa na
+                                                                                                 // column and industry
+                                                                System.out.println(
+                                                                        "\tJob Name: " + cit[indexLE][i][j][k]);
+                                                                System.out.println("\tJOB DESCRIPTION: "
+                                                                        + cit[indexLE][i][j + 1][k]);
+                                                                System.out.println("\tJOB QUALIFICATIONS: "
+                                                                        + cit[indexLE][i][j + 2][k]);
+                                                                System.out.println(
+                                                                        "\tJOB LOCATION: " + cit[indexLE][i][j + 3][k]);
+                                                                System.out.println("\tMAXIMUM EMPLOYEE: "
+                                                                        + citNum[indexLE][i][j][k]);
+                                                                System.out.println("\tMONTHLY SALARY: "
+                                                                        + citNum[indexLE][i][j + 1][k]);
+                                                                System.out.println("\tAGE REQUIREMENT: "
+                                                                        + citNum[indexLE][i][j + 2][k]);
+                                                                System.out.println(
+                                                                        "----------------------------------------");
+
+                                                                foundJobPosted = true;
+
+                                                            }
+
+                                                        }
+                                                        System.out.println("");
+                                                    }
+                                                    System.out.println("");
+                                                }
+
+                                                if (foundJobPosted == true) {
+
+                                                    while (true) {
+                                                        System.out.println("------------------------------");
+                                                        System.out.println("1. TYPE 1 to Edit Job Infos");
+                                                        System.out.println("2. or ANY to return");
+                                                        System.out.print("ENTER YOUR CHOICE: ");
+                                                        String eJ = string.nextLine();
+
+                                                        if ("1".equals(eJ)) {
+                                                            System.out.println("------------------------------");
+                                                            System.out.print("ENTER JOB NAME YOU WANT TO EDIT: ");
+                                                            String jobToDelete = string.nextLine();
+
+                                                            int jnywdINDUSTRY = -1;
+                                                            int jnywdLOCATION = -1;
+
+                                                            for (int i = 0; i < cit[0].length; i++) {
+                                                                for (int j = 0; j < cit[0][1][2].length; j++) {
+                                                                    if (cit[indexLE][i][0][j] != null && jobToDelete
+                                                                            .equalsIgnoreCase(cit[indexLE][i][0][j])) {
+
+                                                                        jnywdINDUSTRY = i;
+                                                                        jnywdLOCATION = j;
+                                                                        break;
+
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                            if (jnywdINDUSTRY != -1) {
+
+                                                                System.out
+                                                                        .println("\n-----CURRENT JOB INFORMATION-----");
+                                                                System.out.println("1. JOB DESCRIPTION: "
+                                                                        + cit[indexLE][jnywdINDUSTRY][1][jnywdLOCATION]);
+                                                                System.out.println("2. JOB QUALIFICATION: "
+                                                                        + cit[indexLE][jnywdINDUSTRY][2][jnywdLOCATION]);
+                                                                System.out.println("3. JOB LOCATION: "
+                                                                        + cit[indexLE][jnywdINDUSTRY][3][jnywdLOCATION]);
+                                                                System.out
+                                                                        .println("4. MAXIMUM EMPLOYEE/S FOR THIS JOB: "
+                                                                                + citNum[indexLE][jnywdINDUSTRY][0][jnywdLOCATION]);
+                                                                System.out.println("5. MONTHLY SALARY: "
+                                                                        + citNum[indexLE][jnywdINDUSTRY][1][jnywdLOCATION]);
+                                                                System.out.println("6. JOBS AGE REQUIREMNT: "
+                                                                        + citNum[indexLE][jnywdINDUSTRY][2][jnywdLOCATION]);
+                                                                System.out.println("7. CANCEL");
+                                                                System.out.print(
+                                                                        "ENTER NUMBER THAT INDICATES WHAT INFO YOU WANT TO EDIT: ");
+                                                                String cji = string.nextLine();
+                                                                System.out
+                                                                        .println("\n----------TO CHANGE-------------");
+
+                                                                switch (cji) {
+                                                                    case "1":
+                                                                        System.out.print("NEW JOB DESCRIPTION: ");
+                                                                        cit[indexLE][jnywdINDUSTRY][1][jnywdLOCATION] = string
+                                                                                .nextLine();
+                                                                        System.out.println(
+                                                                                "JOBS DESCRIPTION UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "2":
+                                                                        System.out.print("NEW JOB QUALIFICATION: ");
+                                                                        cit[indexLE][jnywdINDUSTRY][2][jnywdLOCATION] = string
+                                                                                .nextLine();
+                                                                        System.out.println(
+                                                                                "JOBS QUALIFICATION UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "3":
+                                                                        System.out.print("NEW JOB LOCATION: ");
+                                                                        cit[indexLE][jnywdINDUSTRY][3][jnywdLOCATION] = string
+                                                                                .nextLine();
+                                                                        System.out.println(
+                                                                                "JOBS QUALIFICATION UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "4":
+                                                                        System.out.print(
+                                                                                "NEW MAXIMUM EMPLOYEE/S FOR THIS JOB: ");
+                                                                        citNum[indexLE][jnywdINDUSTRY][0][jnywdLOCATION] = num
+                                                                                .nextInt();
+                                                                        System.out.println(
+                                                                                "JOBS MAXIMUM EMPLOYEES UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "5":
+                                                                        System.out.print("NEW MONTHLY SALARY: ");
+                                                                        citNum[indexLE][jnywdINDUSTRY][1][jnywdLOCATION] = num
+                                                                                .nextInt();
+                                                                        System.out.println(
+                                                                                "JOBS MONTHLY SALARY UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "6":
+                                                                        System.out
+                                                                                .print("6. NEW JOBS AGE REQUIREMNT: ");
+                                                                        citNum[indexLE][jnywdINDUSTRY][2][jnywdLOCATION] = num
+                                                                                .nextInt();
+                                                                        System.out.print(
+                                                                                "JOBS AGE REQUIREMNT UPDATED SUCCESSFULLY!..\n");
+                                                                        continue;
+                                                                    case "7":
+                                                                        System.out.println();
+                                                                        break;
+
+                                                                    default:
+                                                                        System.out.println("PLEASE PICK 1 to 8 only!");
+
+                                                                }
+
+                                                            } else if (jnywdINDUSTRY == -1) {
+
+                                                                System.out.println("\nJOB NAME NOT FOUND!\n");
+                                                                System.out.println("1. Type 1 to RETRY");
+                                                                System.out.println("2. Type 2 or Any to RETURN");
+                                                                System.out.print("ENTER YOUR CHOICE: ");
+                                                                String jnnt = string.nextLine();
+
+                                                                if (!"1".equals(jnnt)) {
+                                                                    break;
+                                                                }
+
+                                                            }
+
+                                                        } else {
+                                                            break;
+                                                        }
+                                                    }
+
+                                                } else {
+                                                    System.out.println("NO JOB PSOTED YET!..\n");
+                                                }
+
+                                                System.out.println("");
+
+                                                continue;
+
+                                            case 2:
+                                                System.out.println("\n-------APPLICANTS FOR YOUR JOB-------");
+
+                                                boolean yeah42 = false;
+
+                                                for (int i = 0; i < lengthACC; i++) {// length sa employees
+
+                                                    for (int j = 0; j < sentApp[i]; j++) {// kung pila na ang ilang na
+                                                                                          // post each account
+
+                                                        if (employerName[i][j] != null) {// e check niya diba gi get man
+                                                                                         // natu tung name sa employer
+                                                                                         // tung nag send tag appication
+                                                                                         // so gi store to sa employer
+                                                                                         // name, so isa^2 hon na sila
+                                                                                         // og read if nag tugma sa
+                                                                                         // employer nga currently
+                                                                                         // logged in mao to pulos pud
+                                                                                         // sa index sa taas tung nag
+                                                                                         // log in as employer
+                                                            if (recAccName[indexLE]
+                                                                    .equalsIgnoreCase(employerName[i][j])) {
+
+                                                                if (status[i] == true) {// so if hired natung panuhaka
+                                                                                        // to, dli natu ma show sa ubang
+                                                                                        // employers kay para dli na ma
+                                                                                        // rewrite iyaha kung kinsa nag
+                                                                                        // hire
+                                                                    continue;
+                                                                }
+                                                                // so if na read nga naa ang name sa employer nga
+                                                                // currently logged in, e output niya unsa ang name sa
+                                                                // nag send og application base sa i, then sa j kung
+                                                                // pang pila nga column na butang ang application
+                                                                // (kunware daghan baya siyag gi applyan) to use e call
+                                                                // pud ang uban nga interconnected atu.
+                                                                System.out.println(
+                                                                        "\tApplicant's First Name: " + firstName[i]);
+                                                                System.out.println(
+                                                                        "\tApplicant's Last Name: " + lastName[i]);
+                                                                System.out.println(
+                                                                        "\tIndustry: " + industryShort[industry[i][j]]);
+                                                                System.out.println("\tJob name: " + sentJobName[i][j]);
+                                                                System.out.println("\t\t---");
+                                                                yeah42 = true;
+
+                                                            }
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                                if (yeah42 == false) {// if walay na read shmepri kani
+                                                    System.out.println("NO APPLICATIONS SENT YET!..\n");
+                                                    continue;
+                                                }
+
+                                                while (true) {// SINCE NA OUPUT NAMAN TANAN NANG APPLY TAS NA DISPKAY
+                                                              // ANG NAME, MAMILI NALANG KA DIDTU THEN TYPE ANG NAME
+                                                              // PARA E SHOW ANG FULL PERSONAL INFORMATION IF QUALIFIED
+                                                              // BA SIYA OR GANAHAN KA NIYA
+
+                                                    try {
+                                                        System.out.println("\n---HIRE NOW!---");
+                                                        System.out.println(
+                                                                "TYPE 1 to Search Someone and display all information details");
+                                                        System.out.println("TYPE 2 to RETURN");
+                                                        System.out.print("ENTER YOUR CHOICE: ");
+                                                        int choiceHN = num.nextInt();
+
+                                                        if (choiceHN == 1) {// SEARCH ANG FIRST AND LAST NAME IF GA
+                                                                            // EXISIT THEN SHOW ALL INFOS
+
+                                                            System.out.println("\n--CHECK EMPLOYEE---");
+                                                            System.out.print("Enter Employees First Name: ");
+                                                            String checkEmployeeF = string.nextLine();
+                                                            System.out.print("Enter Employees Last Name: ");
+                                                            String checkEmployeeL = string.nextLine();
+
+                                                            int indexHN = -1;// IF NAAY NAKITA SA LOOP E REWRITE DRI
+                                                                             // THEN GAMITON TANI AS REFRENCE PARA
+                                                                             // HATAGAG STATUS TO HIRED THEN UNSA NGA
+                                                                             // INDUSTRY, OG JOB NAME, then sicne naa
+                                                                             // paman ta sa EMPLOYER AND WE HAVE ITS
+                                                                             // INDEX GAMITON TATU AS REFERENCE
+
+                                                            for (int i = 0; i < lengthACC; i++) {
+
+                                                                if (checkEmployeeL.equalsIgnoreCase(lastName[i])
+                                                                        && checkEmployeeF
+                                                                                .equalsIgnoreCase(firstName[i])) {
+
+                                                                    indexHN = i;
+                                                                    break;
+
+                                                                }
+
+                                                            }
+
+                                                            // since nag bug kay maka hire ka sa ubang tao sag wala nag
+                                                            // apply sa imo as logn as na read, need natu ni para ma
+                                                            // secrure nga dapat sa imo ra siya nag apply!
+                                                            boolean testIfYours = false;
+
+                                                            for (int i = 0; i < sentApp[indexHN]; i++) {// check if nag
+                                                                                                        // apply jud ba
+                                                                if (employerName[indexHN][i]
+                                                                        .equalsIgnoreCase(recAccName[indexLE])) {
+                                                                    testIfYours = true;
+                                                                }
+                                                            }
+
+                                                            if (testIfYours == false) {
+                                                                System.out.println(
+                                                                        "\nTHIS ACCOUNT DIDNT SEND AN APPLICATION FORM TO YOUR PUBLISHED JOBS!..\n");
+                                                                continue;
+                                                            }
+
+                                                            if (indexHN != -1) {// INFOS SA EMPLOYEE
+                                                                System.out
+                                                                        .println("\n------PERSONAL INFORMATION------");
+                                                                System.out.println("NAME: " + lastName[indexHN] + ", "
+                                                                        + firstName[indexHN] + " "
+                                                                        + middleName[indexHN]);
+                                                                System.out.println("AGE: " + age[indexHN]);
+                                                                System.out.println("SEX: " + sex[indexHN]);
+                                                                System.out.println("ADDRESS: " + address[indexHN]);
+                                                                System.out.println("EMAIL: " + email[indexHN]);
+                                                                System.out.println("PHONE: " + phone[indexHN]);
+                                                                System.out.println("EDUCATIONAL ATTAINMENT: "
+                                                                        + educationalAttainment[educAtt[indexHN]]);
+                                                                System.out.println(
+                                                                        "WORK EXPERIENCE: " + workExp[indexHN]);
+                                                                System.out.println(
+                                                                        "CAREER OBJECTIVE: " + carObjective[indexHN]);
+                                                                System.out.println("STRENGTHS: " + strenghts[indexHN]);
+
+                                                                System.out.println(
+                                                                        "\nTYPE 1 to Send an invitation for Hiring");
+                                                                System.out.println("TYPE 2 to Set an GMEET INTERVIEW");
+                                                                System.out.println("TYPE 3 or ANY to RETURN");
+                                                                System.out.print("ENTER YOUR CHOICE: ");
+                                                                String choiceHN2 = string.nextLine();
+
+                                                                if ("1".equals(choiceHN2)) {// so ipoang input nani nimo
+                                                                                            // dri manually kay kapoy
+                                                                                            // nag for loop nga daghan
+
+                                                                    boolean hn2 = true;
+                                                                    boolean findJOB = false;
+                                                                    String foundJob = "";
+                                                                    while (!findJOB && hn2 == true) {
+
+                                                                        boolean proceedHN = true;
+                                                                        boolean proceedHN2 = false;
+
+                                                                        // TO DOOOOO!!!!!
+                                                                        // (done) dapat dli ka maka hire sa iya ikaduha
+                                                                        // with same industry and jobname!
+                                                                        // (done)dapat e check sa if nag sent ba siyag
+                                                                        // applicataion base sa jobname !! (important)
+                                                                        System.out
+                                                                                .print("\nEnter the name of the JOB: ");
+                                                                        jobNameInv[indexHN][invLength[indexHN]] = string
+                                                                                .nextLine();
+
+                                                                        for (int i = 0; i < cit[0].length; i++) {// check
+                                                                                                                 // if
+                                                                                                                 // nag
+                                                                                                                 // exist
+                                                                                                                 // nga
+                                                                                                                 // job
+                                                                            for (int j = 0; j < cit[0][1][2].length; j++) {
+
+                                                                                if (cit[indexLE][i][0][j] != null
+                                                                                        && jobNameInv[indexHN][invLength[indexHN]]
+                                                                                                .equalsIgnoreCase(
+                                                                                                        cit[indexLE][i][0][j])) {
+
+                                                                                    for (int ii = 0; ii < sentApp[indexHN]; ii++) {// check
+                                                                                                                                   // if
+                                                                                                                                   // nag
+                                                                                                                                   // send
+                                                                                                                                   // jud
+                                                                                                                                   // bag
+                                                                                                                                   // application
+                                                                                        if (jobNameInv[indexHN][invLength[indexHN]]
+                                                                                                .equalsIgnoreCase(
+                                                                                                        sentJobName[indexHN][ii])
+                                                                                                && employerName[indexHN][ii]
+                                                                                                        .equalsIgnoreCase(
+                                                                                                                recAccName[indexLE])) {
+                                                                                            proceedHN2 = true;
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+
+                                                                                    if (proceedHN2 == false) {
+                                                                                        System.out.println(
+                                                                                                "\nTHIS EMPLOYEE DIDNT SEND YOU AN APPLICATION!...\n");
+                                                                                        i = cit[0].length;
+                                                                                        break;
+                                                                                    }
+
+                                                                                    for (int k = 0; k < invLength[indexHN]; k++) {// check
+                                                                                                                                  // if
+                                                                                                                                  // naka
+                                                                                                                                  // send
+                                                                                                                                  // naba
+                                                                                                                                  // kag
+                                                                                                                                  // invitation
+                                                                                                                                  // sa
+                                                                                                                                  // iya
+
+                                                                                        if (jobNameInv[indexHN][invLength[indexHN]]
+                                                                                                .equalsIgnoreCase(
+                                                                                                        jobNameInv[indexHN][k])) {
+                                                                                            System.out.println(
+                                                                                                    "\nYOU SENT A HIRING INVITATION FOT THIS JOB ALREADY!..\n");
+                                                                                            System.out.println(
+                                                                                                    "TYPE 1 to RETRY");
+                                                                                            System.out.println(
+                                                                                                    "TYPE 2 or Any to RETURN");
+                                                                                            System.out.print(
+                                                                                                    "YOUR CHOICE: ");
+                                                                                            String ysa = string
+                                                                                                    .nextLine();
+
+                                                                                            if ("1".equals(ysa)) {
+                                                                                                proceedHN = false;
+                                                                                                i = cit[0].length;
+                                                                                                break;
+                                                                                            } else {
+                                                                                                hn2 = false;
+                                                                                            }
+
+                                                                                        }
+
+                                                                                    }
+
+                                                                                    if (proceedHN == false) {
+                                                                                        break;
+                                                                                    }
+
+                                                                                    foundJob = jobNameInv[indexHN][invLength[indexHN]];
+                                                                                    findJOB = true;
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                    }
+
+                                                                    if (hn2 == false) {// para dli ka proceed if mag
+                                                                                       // return (kay pabalikn natu sa
+                                                                                       // taas)
+                                                                        continue;
+                                                                    }
+
+                                                                    boolean findIndustry = false;
+                                                                    while (!findIndustry) {
+                                                                        System.out.print("Enter which industry: ");
+                                                                        jobIndustryInv[indexHN][invLength[indexHN]] = string
+                                                                                .nextLine();
+                                                                        //
+                                                                        //
+                                                                        // (done)TO CONSIDERRRRRRRRRRRRR DAPAT IF SAME
+                                                                        // OG NAME SAME OG INDUSTRY DLI MO PROCEED IF
+                                                                        // WALA SIYA SA TAMA NA INDUSTRY DAPAT SAKTO ANG
+                                                                        // DUHA
+                                                                        for (int i = 0; i < industryShort.length; i++) {
+                                                                            if (jobIndustryInv[indexHN][invLength[indexHN]]
+                                                                                    .equalsIgnoreCase(
+                                                                                            industryShort[i])) {
+
+                                                                                for (int j = 0; j < cit[0].length; j++) {
+                                                                                    for (int k = 0; k < cit[0][1][2].length; k++) {
+                                                                                        if (cit[indexLE][j][0][k] != null
+                                                                                                && foundJob
+                                                                                                        .equalsIgnoreCase(
+                                                                                                                cit[indexLE][j][0][k])) {
+
+                                                                                            if (jobIndustryInv[indexHN][invLength[indexHN]]
+                                                                                                    .equalsIgnoreCase(
+                                                                                                            industryShort[j])) {
+                                                                                                findIndustry = true;
+                                                                                                j = industryShort.length;
+                                                                                                break;
+                                                                                            } else {
+                                                                                                System.out.print(
+                                                                                                        "\nThe " + jobIndustryInv[indexHN][invLength[indexHN]]
+                                                                                                                .toUpperCase()
+                                                                                                                + " ");
+                                                                                                System.out.println(
+                                                                                                        "Industry doesnt have the job "
+                                                                                                                + foundJob
+                                                                                                                        .toUpperCase());
+                                                                                                i = industryShort.length;
+                                                                                                break;
+                                                                                            }
+
+                                                                                        }
+                                                                                    }
+                                                                                }
+
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    jobEmployerInv[indexHN][invLength[indexHN]] = recAccName[indexLE];
+                                                                    invLength[indexHN]++;
+
+                                                                    statusInterview[indexHN] = false;// mao ni after sa
+                                                                                                     // hired mo false
+                                                                                                     // dayun ang
+                                                                                                     // itnerview
+                                                                                                     // reagardless if
+                                                                                                     // true or false,
+                                                                                                     // bantug dli
+                                                                                                     // makita when
+                                                                                                     // hired naka
+                                                                    System.out.println(
+                                                                            "\nSENT AN HIRING INVITATION SUCCESSFULLY!..\n");
+
+                                                                    break;
+
+                                                                } else if ("2".equals(choiceHN2)) {// mekus^2 ranig
+                                                                                                   // input dri guys
+                                                                    statusInterview[indexHN] = true;
+                                                                    System.out.print(
+                                                                            "\nEnter Date and Time [Month day, Year. TIME am/pm]: ");
+                                                                    interTime[indexHN] = string.nextLine();
+                                                                    System.out.print("Enter Gmeet link: ");
+                                                                    gmeetLink[indexHN] = string.nextLine();
+                                                                    System.out.print("For what job: ");
+                                                                    interJob[indexHN] = string.nextLine();
+                                                                    System.out.print("In what industry: ");
+                                                                    interIndustry[indexHN] = string.nextLine();
+                                                                    interBy[indexHN] = recAccName[indexLE];
+                                                                    System.out.println(
+                                                                            "Set an Interview Successfully!\n");
+                                                                    break;
+                                                                } else {
+                                                                    break;
+                                                                }
+
+                                                            } else if (indexHN == -1) {// obviously
+                                                                System.out.println("\nACCOUNT NOT FOUND!\n");
+                                                            }
+
+                                                        } else if (choiceHN == 2) {// 1 is search employee, 2 is break
+                                                            break;
+                                                        } else {// if patakag input
+                                                            System.out.println("Input 1 to 6 only!\n");
+                                                        }
+
+                                                    } catch (Exception e) {// if cahracters instead sa int
+                                                        System.out
+                                                                .println("ACCOUNT NOT FOUND! or INCORRECT INPUT..!\n");
+                                                        num.nextLine();
+                                                    }
+
+                                                }
+                                                //
+                                                //
+                                                continue;
+
+                                            case 3: // Publish a job
+
+                                                while (true) {
+
+                                                    try {
+                                                        System.out.println("\n--------POST A JOB--------\n");
+
+                                                        System.out.println(
+                                                                "REMAINING POST: " + recAccChance[indexLE] + "\n");// outpout
+                                                                                                                   // pila
+                                                                                                                   // analnmg
+                                                                                                                   // chance
+                                                                                                                   // nimo
+                                                                                                                   // to
+                                                                                                                   // post,
+                                                                                                                   // diba
+                                                                                                                   // power
+                                                                                                                   // kayu
+                                                                                                                   // ang
+                                                                                                                   // index
+                                                                                                                   // sa
+                                                                                                                   // pinaka
+                                                                                                                   // taas
+                                                                                                                   // (indexLE),
+                                                                                                                   // kay
+                                                                                                                   // gamiton
+                                                                                                                   // jud
+                                                                                                                   // sa
+                                                                                                                   // tanan
+                                                                                                                   // parehas
+                                                                                                                   // ani
+                                                                                                                   // para
+                                                                                                                   // ma
+                                                                                                                   // locate
+                                                                                                                   // pila
+                                                                                                                   // analng
+                                                                                                                   // iyaaha
+                                                                                                                   // chance
+                                                                                                                   // in
+                                                                                                                   // this
+                                                                                                                   // specific
+                                                                                                                   // account
+                                                        if (recAccChance[indexLE] == 0) {// if ma zero na imong chance
+                                                                                         // dapat mo bayad ka para mo
+                                                                                         // extend imong chance post
+                                                                                         // hehe pina maru haha
+                                                            System.out.println("Insufficient Post Credit!\n");
+                                                            System.out.println(
+                                                                    "Type 1 to Pay 200 for an additional 10 post");
+                                                            System.out.println("Type 2 to return");
+                                                            System.out.print("Your Choice is: ");
+                                                            int choicePB = num.nextInt();
+
+                                                            if (choicePB == 1) {
+                                                                if (depositLE[indexLE] < 200) {
+                                                                    System.out.println("INSUFFICIENT BAlANCE!\n");
+                                                                    continue;
+                                                                }
+                                                                depositLE[indexLE] -= 200;
+                                                                recAccChance[indexLE] += 10;
+                                                                profit += 200;
+                                                                System.out.println("PAID 200 SUCCESSFULLY!");
+                                                                System.out
+                                                                        .println("New Balance: " + depositLE[indexLE]);
+                                                            } else if (choicePB == 2) {
+                                                                break;
+                                                            } else {
+                                                                System.out.println("Please select 1 and 2 only!\n");
+                                                            }
+
+                                                        }
+                                                        // MEKUS^2 RANIG INPUT DRIA
+                                                        System.out.println("\n--SELECT WHAT INDUSTRY--");
+                                                        System.out
+                                                                .println("1. Computer and Information Technology Jobs");
+                                                        System.out.println("2. Health Care");
+                                                        System.out.println("3. Digital Marketing");
+                                                        System.out.println("4. Return");
+                                                        System.out.print("YOUR CHOICE IS: ");
+                                                        int choices44 = num.nextInt();// nganu wa ko nag minus 1 dria,
+                                                                                      // nag tanga baya kog 2h ani kay
+                                                                                      // dli mo read og tarung sa
+                                                                                      // industry
+
+                                                        if (choices44 == 1) {
+                                                            System.out.println(
+                                                                    "\n-Computer and Information Technology Jobs-");
+                                                        } else if (choices44 == 2) {
+                                                            System.out.println("\n-Health Care-");
+                                                        } else if (choices44 == 3) {
+                                                            System.out.println("\n-Digital Marketing-");
+                                                        } else if (choices44 == 4) {
+                                                            break;
+                                                        } else {
+                                                            System.out.println("Please Input 1 to 4 only!\n");
+                                                            continue;
+                                                        }
+
+                                                        System.out.println("\tPOST A JOB");
+
+                                                        while (true) {
+
+                                                            boolean jobExist = false;
+                                                            System.out.print("JOB NAME: ");
+                                                            // TO DO!!!!!!
+                                                            // (done)e consider if naa nabay naka post ana kay para dli
+                                                            // mag error if different industry, kay base on my theory
+                                                            // kung kinsa una makita mao natu siya ang e process
+                                                            String checkJOBNAME = string.nextLine();
+
+                                                            for (int i = 0; i < jobPOSTED.length; i++) {
+                                                                if (jobPOSTED[i] != null && checkJOBNAME
+                                                                        .equalsIgnoreCase(jobPOSTED[i])) {
+                                                                    jobExist = true;
+                                                                    break;
+
+                                                                }
+                                                            }
+
+                                                            if (jobExist == true) {
+                                                                System.out.println(
+                                                                        "\nTHIS JOB ALREADY EXIST TRY ANOTHER JOB NAME!..\n");
+                                                                continue;
+                                                            }
+
+                                                            cit[indexLE][choices44
+                                                                    - 1][0][citLength[indexLE]] = checkJOBNAME;
+                                                            jobPOSTED[jobPostedLength] = cit[indexLE][choices44
+                                                                    - 1][0][citLength[indexLE]];
+                                                            jobPostedLength++;
+
+                                                            break;
+                                                        }
+
+                                                        System.out.print("JOB DESCRIPTION: ");
+                                                        cit[indexLE][choices44 - 1][1][citLength[indexLE]] = string
+                                                                .nextLine();
+                                                        System.out.print("JOB QUALIFICATIONS: ");
+                                                        cit[indexLE][choices44 - 1][2][citLength[indexLE]] = string
+                                                                .nextLine();
+                                                        System.out.print("JOB LOCATION: ");
+                                                        cit[indexLE][choices44 - 1][3][citLength[indexLE]] = string
+                                                                .nextLine();
+
+                                                        while (true) {// if maka kita mog daghan nga while try catch
+                                                                      // psabnot ana int gina pangayu par anaay mo salo
+                                                                      // sa liki nga user
+                                                            try {
+                                                                System.out.print("MAXIMUM EMPLOYEE: ");
+                                                                citNum[indexLE][choices44
+                                                                        - 1][0][citLength[indexLE]] = num.nextInt();
+                                                                break;
+                                                            } catch (Exception e) {
+                                                                System.out.println("Please Integers only\n");
+                                                                num.nextLine();
+                                                            }
+                                                        }
+
+                                                        while (true) {
+                                                            try {
+                                                                System.out.print("SALARY: ");
+                                                                citNum[indexLE][choices44
+                                                                        - 1][1][citLength[indexLE]] = num.nextInt();
+                                                                break;
+                                                            } catch (Exception e) {
+                                                                System.out.println("Please Integers only\n");
+                                                                num.nextLine();
+                                                            }
+                                                        }
+                                                        while (true) {
+                                                            try {
+                                                                System.out.print("AGE REQUIREMENT: ");
+                                                                citNum[indexLE][choices44
+                                                                        - 1][2][citLength[indexLE]] = num.nextInt();
+                                                                break;
+                                                            } catch (Exception e) {
+                                                                System.out.println("Please Integers only\n");
+                                                                num.nextLine();
+                                                            }
+                                                        }
+
+                                                        recAccChance[indexLE]--;// minusan ang imong remaining post
+                                                                                // chance
+                                                        citLength[indexLE]++;// +1 kay naka post ka, mao ni ang length
+                                                                             // sa imiing na post na para gamiton aron
+                                                                             // dli mag sapaw^2
+                                                        System.out.println("JOB POST SUCCESSFULY!\n");
+                                                        num.nextLine();
+
+                                                        break;
+                                                    } catch (Exception e) {
+                                                        System.out.println("Only Integers are allowed!\n");
+                                                        num.nextLine();
+                                                    }
+
+                                                }
+
+                                                continue;
+
+                                            case 4:// actually if mag delete kag jobs dapat apil tung mga gipang hire
+                                                   // nimo, pero since recruitment raman to wala nay apil ang recruited
+                                                while (true) {
+                                                    try {
+                                                        System.out.println("\n---DELETE PUBLISHED JOB---");
+                                                        System.out.println("\tSELECT WHAT INDUSTRY");// NAGPA SELECT TA
+                                                                                                     // KAY NAA MAN GOI
+                                                                                                     // TENDENCY NA SAME
+                                                                                                     // OG NAME BUT
+                                                                                                     // DIFFERENT
+                                                                                                     // INDUSTRY SO MA
+                                                                                                     // UNA JUD TUG READ
+                                                                                                     // ANG NAA SA UNA
+                                                                                                     // THEN BREAK;
+                                                        System.out
+                                                                .println("1. Computer and Information Technology Jobs");
+                                                        System.out.println("2. Health Care");
+                                                        System.out.println("3. Digital Marketing");
+                                                        System.out.println("4. Return");
+                                                        System.out.print("YOUR CHOICE IS: ");
+                                                        int industCheck = num.nextInt();
+
+                                                        if (industCheck < 1 || industCheck > 4) {
+                                                            System.out.println("Input 1 to 4 Only!..\n");
+                                                            num.nextLine();
+                                                            continue;
+                                                        } else if (industCheck == 4) {
+                                                            break;
+                                                        }
+
+                                                        System.out.print("Enter Job Name to Delete: ");// checker rani
+                                                                                                       // for comparison
+                                                                                                       // if nag exist
+                                                        String jobNameCheck = string.nextLine();
+
+                                                        int indexGetJobIndex = -1;// tan awon asa na index or column na
+                                                                                  // talpak ang job
+
+                                                        for (int j = 0; j < cit[0][1][2].length; j++) {
+                                                            if (cit[indexLE][industCheck - 1][0][j]
+                                                                    .equalsIgnoreCase(jobNameCheck)) {
+
+                                                                indexGetJobIndex = j;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (indexGetJobIndex != -1) {// if naay nakita
+                                                            for (int i = indexGetJobIndex; i < cit[0][1][2].length; i++) {// e
+                                                                                                                          // sibog^
+                                                                                                                          // rani
+                                                                                                                          // pa
+                                                                                                                          // left
+                                                                if (i == cit[0][1][2].length - 1) {// if naa na sa tumoy
+                                                                                                   // e manual e null
+                                                                                                   // nalang or 0 sincem
+                                                                                                   // a out of bounds ta
+                                                                                                   // sa index
+                                                                    cit[indexLE][industCheck
+                                                                            - 1][0][citLength[i]] = null;
+                                                                    cit[indexLE][industCheck
+                                                                            - 1][1][citLength[i]] = null;
+                                                                    cit[indexLE][industCheck
+                                                                            - 1][2][citLength[i]] = null;
+                                                                    cit[indexLE][industCheck
+                                                                            - 1][3][citLength[i]] = null;
+                                                                    citNum[indexLE][industCheck
+                                                                            - 1][0][citLength[i]] = 0;
+                                                                    citNum[indexLE][industCheck
+                                                                            - 1][1][citLength[i]] = 0;
+                                                                    citNum[indexLE][industCheck
+                                                                            - 1][2][citLength[i]] = 0;
+                                                                    break;
+                                                                }
+                                                                cit[indexLE][industCheck
+                                                                        - 1][0][citLength[i]] = cit[indexLE][industCheck
+                                                                                - 1][0][citLength[i]++];
+                                                                cit[indexLE][industCheck
+                                                                        - 1][1][citLength[i]] = cit[indexLE][industCheck
+                                                                                - 1][1][citLength[i]++];
+                                                                cit[indexLE][industCheck
+                                                                        - 1][2][citLength[i]] = cit[indexLE][industCheck
+                                                                                - 1][2][citLength[i]++];
+                                                                cit[indexLE][industCheck
+                                                                        - 1][3][citLength[i]] = cit[indexLE][industCheck
+                                                                                - 1][3][citLength[i]++];
+                                                                citNum[indexLE][industCheck
+                                                                        - 1][0][citLength[i]] = citNum[indexLE][industCheck
+                                                                                - 1][0][citLength[i]++];
+                                                                citNum[indexLE][industCheck
+                                                                        - 1][1][citLength[i]] = citNum[indexLE][industCheck
+                                                                                - 1][1][citLength[i]++];
+                                                                citNum[indexLE][industCheck
+                                                                        - 1][2][citLength[i]] = citNum[indexLE][industCheck
+                                                                                - 1][2][citLength[i]++];
+
+                                                            }
+
+                                                            citLength[indexLE]--;// kung pila na imong na post og asa
+                                                                                 // nga index e decrement by 1 kay naka
+                                                                                 // delete na
+                                                            System.out.println("JOB DELETED SUCCESSFULY!...\n");
+
+                                                        } else if (indexGetJobIndex == -1) {
+                                                            System.out.println("JOB DOESNT EXIST!...\n");
+                                                            num.nextLine();
+                                                            continue;
+                                                        }
+
+                                                        break;
+                                                    } catch (Exception e) {
+                                                        System.out.println("ERROR");
+                                                        num.nextLine();
+                                                    }
+                                                }
+                                                continue;
+
+                                            case 5:// DEPOSIT
+
+                                                while (true) {// mekus^2 rani easy rani sa inyu guys
+                                                    try {
+                                                        System.out.println("---DEPOSIT---");
+                                                        System.out.println(
+                                                                "BALANCE: " + rounded.format(depositLE[indexLE]));
+                                                        System.out
+                                                                .println("TYPE 1 To DEPOSIT, TYPE 2 or ANY for CANCEL");
+                                                        System.out.print("ENTER YOUR CHOICE: ");
+                                                        int case41 = num.nextInt();
+
+                                                        if (case41 == 1) {
+                                                            System.out.print("ENTER AMOUNT TO DEPOSIT: ");
+                                                            double depositLEholder = num.nextDouble();
+                                                            depositLE[indexLE] += depositLEholder;
+                                                            System.out.println("DEPOSITED SUCCESSFULLY");
+                                                        }
+                                                        break;
+                                                    } catch (Exception e) {
+                                                        System.out.println("Only Integers are allowed!\n");
+                                                        num.nextLine();
+                                                    }
+
+                                                }
+
+                                                continue;
+                                            case 6:
+                                                System.out.println("\n ---------HIRED EMPLOYEES---------");
+                                                boolean he = false;
+                                                for (int i = 0; i < hiredBy.length; i++) {
+
+                                                    if (hiredBy[i] != null) {
+
+                                                        if (recAccName[indexLE].equals(hiredBy[i])) {
+                                                            System.out.println("\tEMPLOYEES NAME: " + lastName[i] + ","
+                                                                    + firstName[i] + " " + middleName[i].charAt(0)
+                                                                    + ".");
+                                                            System.out.println("\tJOBS NAME: " + hiredJob[i]);
+                                                            System.out.println("\tJOBS INDUSTRY: " + hiredIndustry[i]);
+                                                            System.out.println("----------------------------");
+                                                            he = true;
+                                                        }
+
+                                                    }
+
+                                                } // add if e fire
+
+                                                if (he == false) {
+                                                    System.out.println("\nNO HIRED EMPLOYEES YET!\n");
+                                                    continue;
+                                                }
+
+                                                while (true) {
+                                                    System.out.println("\n-----------------------");
+                                                    System.out.println("1. FIRE EMPLOYEES");
+                                                    System.out.println("2. to RETURN");
+                                                    System.out.print("YOUR CHOICE: ");
+                                                    String choiceFE = string.nextLine();
+
+                                                    if ("1".equals(choiceFE)) {
+                                                        System.out.println(
+                                                                "--------TO FIRE THIS EMPLOYEE PLEASE PROVIDE THE FOLLOWING---------");
+                                                        System.out.print("\nENTER FIRST NAME AND LAST NAME: ");
+                                                        String fireNameCheck = string.nextLine();
+                                                        String[] fireNameCheckF = fireNameCheck.split(" ", 2);
+
+                                                        boolean employeeFound = false;
+
+                                                        for (int i = 0; i < hiredBy.length; i++) {
+                                                            if (hiredBy[i] != null && hiredBy[i]
+                                                                    .equalsIgnoreCase(recAccName[indexLE])) {
+                                                                if (fireNameCheckF[0].equals(firstName[i])
+                                                                        && fireNameCheckF[1].equals(lastName[i])) {
+
+                                                                    for (int j = 0; j < cit[0].length; j++) {
+                                                                        for (int k = 0; k < citNum[0][1][2].length; k++) {
+
+                                                                            if (cit[indexLE][j][0][k] != null
+                                                                                    && hiredJob[i].equalsIgnoreCase(
+                                                                                            cit[indexLE][j][0][k])) {
+                                                                                citNum[indexLE][j][0][k]++;
+                                                                                break;
+                                                                            }
+
+                                                                        }
+                                                                    }
+
+                                                                    status[i] = false;
+                                                                    hiredJob[i] = null;
+                                                                    hiredIndustry[i] = null;
+                                                                    hiredBy[i] = null;
+                                                                    System.out.println("FIRED SUCCESSFULLY!..\n");
+                                                                    employeeFound = true;
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                        }
+
+                                                        if (employeeFound == false) {
+                                                            System.out.println(
+                                                                    "EMPLOYEE YOU HIRED DOESNT EXIST OR NOT FOUND!..\n");
+                                                        }
+
+                                                    } else if ("2".equals(choiceFE)) {
+                                                        break;
+                                                    } else {
+                                                        System.out.println("PLEASE INPUT 1 and 2 only!..\n");
+                                                    }
+                                                }
+                                                // add another case for iterview (done)
+                                                continue;
+                                            case 7:
+
+                                                System.out.println(
+                                                        "\n ---------EMPLOYEES SCHEDULED FOR AN INTEREVIEW---------");
+
+                                                boolean ei = false;
+                                                for (int i = 0; i < interBy.length; i++) {
+
+                                                    // if ma hawd naku nice tana ni butangag sort2 like kinsa ang una ma
+                                                    // interview para dali nalang
+                                                    if (interBy[i] != null) {
+
+                                                        if (recAccName[indexLE].equals(interBy[i])
+                                                                && statusInterview[i] == true) {
+
+                                                            System.out.println("\tEMPLOYEES NAME: " + lastName[i] + ","
+                                                                    + firstName[i] + " " + middleName[i]);
+                                                            System.out.println(
+                                                                    "\tTIME FOR THE INTERVIEW: " + interTime[i]);
+                                                            System.out.println(
+                                                                    "\tLINK FOR THE INTERVIEW: " + gmeetLink[i]);
+                                                            System.out.println("\tJOB NAME: " + interJob[i]);
+                                                            System.out.println("\tINDUSTRY: " + interIndustry[i]);
+                                                            System.out.println("----------------------------");
+
+                                                            ei = true;
+                                                        }
+
+                                                    }
+
+                                                } // add if e fire
+
+                                                if (ei == false) {
+                                                    System.out.println(
+                                                            "\nNO EMPLOYEES HAVE BEEN SET FOR AN INTERVIEW YET!\n");
+                                                }
+
+                                                continue;
+
+                                            case 8:
+                                                while (true) {
+                                                    System.out.println("\n--------JOB INVITATION SENT--------");
+
+                                                    boolean jobExist = false;
+                                                    for (int i = 0; i < lengthACC; i++) {
+                                                        for (int j = 0; j < jobEmployerInv.length; j++) {
+                                                            if (jobEmployerInv[i][j] != null && jobEmployerInv[i][j]
+                                                                    .equalsIgnoreCase(recAccName[indexLE])) {
+
+                                                                jobExist = true;
+
+                                                                System.out.println("\tEMPLOYEE: " + lastName[i] + ", "
+                                                                        + firstName[i] + " " + middleName[i].charAt(0));
+                                                                System.out.println("\tJOB NAME: " + jobNameInv[i][j]);
+                                                                System.out
+                                                                        .println("\tINDUSTRY: " + jobIndustryInv[i][j]);
+                                                                System.out
+                                                                        .println("----------------------------------");
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (jobExist == false) {
+                                                        System.out.println("YOU HAVENT SENT A JOB INVITATION YET!..\n");
+                                                        break;
+                                                    }
+
+                                                    boolean pjid = true;
+                                                    while (pjid) {
+                                                        System.out.println("\n-------------------------");
+                                                        System.out.println("TYPE 1 to perform job invitation deletion");
+                                                        System.out.println("TYPE 2 or ANY to return");
+                                                        System.out.print("YOUR CHOICE: ");
+                                                        String pjd = string.nextLine();
+
+                                                        if ("1".equals(pjd)) {
+
+                                                            //
+                                                            boolean returnIf2 = false;
+
+                                                            int indexESD = -1;
+                                                            while (true) {
+
+                                                                boolean proceedEEF = false;
+                                                                System.out.print("\nENTER EMPLOYEES FIRST NAME: ");
+                                                                String checkNAME = string.nextLine();
+                                                                System.out.print("ENTER EMPLOYEES LAST NAME: ");
+                                                                String checkLNAME = string.nextLine();
+
+                                                                for (int i = 0; i < lengthACC; i++) {
+                                                                    if (firstName[i].equalsIgnoreCase(checkNAME)
+                                                                            && lastName[i]
+                                                                                    .equalsIgnoreCase(checkLNAME)) {
+
+                                                                        for (int j = 0; j < invLength[i]; j++) {
+
+                                                                            if (jobEmployerInv[i][j].equalsIgnoreCase(
+                                                                                    recAccName[indexLE])) {
+
+                                                                                proceedEEF = true;
+                                                                                indexESD = i;
+                                                                                i = lengthACC;
+                                                                                break;
+                                                                            }
+
+                                                                        }
+
+                                                                    }
+                                                                }
+
+                                                                if (proceedEEF == false) {
+
+                                                                    System.out.println(
+                                                                            "\nACCOUNT NOT FOUND OR YOU HAVENT SEND A JOB INVITATION!..\n");
+                                                                    System.out.println("TYPE 1 to RETRY");
+                                                                    System.out.println("TYPE 2 or ANY TO RETURN");
+                                                                    System.out.print("YOUR CHOICE: ");
+                                                                    String anf = string.nextLine();
+
+                                                                    if ("1".equals(anf)) {
+                                                                        continue;
+                                                                    } else {
+                                                                        returnIf2 = true;
+                                                                    }
+
+                                                                }
+
+                                                                break;
+                                                            }
+
+                                                            if (returnIf2 == true) {
+                                                                continue;
+                                                            }
+
+                                                            // e sumpay rani sila later
+                                                            // check if naka send ka sa iya ana nga job or ga exist ba
+                                                            while (true) {
+                                                                System.out.print("ENTER JOB NAME: ");
+                                                                String jobNAME = string.nextLine();
+
+                                                                boolean jobFOUND = false;
+
+                                                                for (int i = 0; i < invLength[indexESD]; i++) {
+
+                                                                    if (jobNameInv[indexESD][i]
+                                                                            .equalsIgnoreCase(jobNAME)
+                                                                            && jobEmployerInv[indexESD][i]
+                                                                                    .equalsIgnoreCase(
+                                                                                            recAccName[indexLE])) {
+
+                                                                        jobFOUND = true;
+
+                                                                        for (int j = i; j < invLength[indexESD]; j++) {
+
+                                                                            if (j == invLength[indexESD] - 1) {
+
+                                                                                jobNameInv[indexESD][j] = null;
+                                                                                jobIndustryInv[indexESD][j] = null;
+                                                                                jobEmployerInv[indexESD][j] = null;
+
+                                                                                break;
+                                                                            }
+
+                                                                            jobNameInv[indexESD][j] = jobNameInv[indexESD][j
+                                                                                    + 1];
+                                                                            jobIndustryInv[indexESD][j] = jobIndustryInv[indexESD][j
+                                                                                    + 1];
+                                                                            jobEmployerInv[indexESD][j] = jobEmployerInv[indexESD][j
+                                                                                    + 1];
+                                                                        }
+                                                                        break;
+                                                                    }
+
+                                                                }
+
+                                                                if (jobFOUND == true) {
+
+                                                                    invLength[indexESD]--;
+                                                                    System.out.println(
+                                                                            "\nJOB SENT DELETED SUCCESSFULLY!..\n");
+                                                                    pjid = true;
+                                                                    break;
+
+                                                                } else {
+                                                                    System.out.println(
+                                                                            "FAILED TO DELETE! POSSIBLE CAUSE: JOB NAME CANT BE READ OR DOEST EXIST!..\n");
+                                                                    System.out.println("TYPE 1 to TRY AGAIN");
+                                                                    System.out.println("TYPE 2 or ANY to RETURN");
+                                                                    System.out.print("YOUR CHOICE: ");
+                                                                    String choiceFTD = string.nextLine();
+
+                                                                    if ("1".equals(choiceFTD)) {
+                                                                        continue;
+                                                                    }
+
+                                                                }
+
+                                                                break;
+                                                            }
+
+                                                        } else {
+                                                            break;
+                                                        }
+
+                                                    }
+
+                                                    break;//
+                                                }
+
+                                                continue;
+                                            case 9:
+                                                break;
+
+                                            default:
+                                                System.out.println("Choose 1 to 9 Only");
+                                                continue;
+                                        }
+
+                                        break;
+                                    } catch (Exception e) {
+                                        System.out.println("Only Integers are allowed!\n");
+                                        num.nextLine();
+                                    }
+                                }
+                            } else {
+
+                                System.out.println("\nACCOUNT DOESNT EXIST!...");
+
+                                while (true) {// if wala nag exist
+                                    try {
+                                        System.out.println("TYPE 1 to Try Again or TYPE 2 to return");
+                                        System.out.print("YOUR CHOICE: ");
+                                        int choices4 = num.nextInt();
+                                        if (choices4 == 1) {
+                                            System.out.println("");
+                                        } else if (choices4 == 2) {
+                                            yeah4 = false;
+                                        } else {
+                                            System.out.println("PICK 1 or 2 only");
+                                        }
+                                        break;
+                                    } catch (Exception e) {
+                                        System.out.println("Please input Integers Only");
+                                        num.nextInt();
+                                    }
+                                }
+                                continue;
+                            }
+                            break;
+                        }
+                        break;
+
+                    case 5:
+                        // Enter as Admin
+                        boolean adminStat = true;
+                        while (adminStat) {
+                            try {
+
+                                boolean adminLoggedIn = true;// e false rani if e remove ang account
+
+                                System.out.println("\n-------LOG IN AS ADMIN--------");
+
+                                System.out.print("Username: ");
+                                String testUserNameAL = string.nextLine();
+                                System.out.print("Password: ");
+                                String testPasswordAL = string.nextLine();
+
+                                if (!testPasswordAL.equals(adminPassword) || !testUserNameAL.equals(adminUsername)) {
+                                    System.out.println("INCORRECT EMAIL OR PASSWORD!\n");
+                                    System.out.println("TYPE 1 to TRY AGAIN");
+                                    System.out.println("TYPE 2 to RETURN");
+                                    System.out.print("YOUR CHOICE: ");
+                                    String choiceAL = string.nextLine();
+
+                                    if ("1".equals(choiceAL)) {
+                                        continue;
+                                    } else if ("2".equals(choiceAL)) {
+                                        adminStat = false;
+                                    } else {
+                                        System.out.println("PLEASE INPUT 1 and 2 Only!\n");
+                                    }
+
+                                } else if (testUserNameAL.equals(adminUsername)
+                                        && testPasswordAL.equals(adminPassword)) {
+                                    System.out.println("LOG IN SUCCESSFULLY!\n");
+                                    adminLoggedIn = true;
+                                }
+                                while (adminLoggedIn) {
+
+                                    System.out.println("\n--------ADMIN PORTAL--------\n");
+                                    // TO DO!!!!!
+                                    // output pud pilay kwarta makuha sa post2 bayad atung mga nahutdan
+                                    System.out.println("1. Create Job Recruiters Account");
+                                    System.out.println("2. Delete Job Recruiters Account");
+                                    System.out.println("3. Delete Applicants Account");
+                                    System.out.println("4. Extend The Job Recruiters post Limit");
+                                    System.out.println("5. Check if theres a wanted EMPLOYEE");
+                                    System.out.println("6. Add wanted EMPLOYEE");
+                                    System.out.println("7. Show all applications");
+                                    System.out.println("8. SHOW ALL RECRUITERS ACCOUNT");
+                                    System.out.println("9. SHOW ALL APPLICANTS ACCOUNT");
+                                    System.out.println("10. DISPLAY PROFIT");
+                                    System.out.println("0. to LOG OUT");
+                                    System.out.print("ENTER YOUR CHOICE: ");
+                                    int choices5 = num.nextInt();
+
+                                    switch (choices5) {
+                                        case 1:
+                                            while (true) {
+                                                System.out.println("\n---CREATE ACCOUNT FOR RECRUITERS---");
+
+                                                System.out.print("Username: ");// as always dele final kay checker
+                                                String checkRecAccUsername = string.nextLine();
+                                                System.out.print("Password: ");// same
+                                                String checkRecPassword = string.nextLine();
+
+                                                boolean yeah5 = false;
+
+                                                for (int i = 0; i < recAccUsernames.length; i++) {// e check if naga
+                                                                                                  // exist kay abwal
+                                                                                                  // parehas
+
+                                                    if (checkRecAccUsername.equals(recAccUsernames[i])) {
+                                                        System.out.println("USERNAME EXIST!...\n");
+                                                        break;
+                                                    } else if (i == recAccUsernames.length - 1) {
+                                                        yeah5 = true;
+                                                    }
+                                                    // TO DO!!!!! MAGPA BAYAD SA CREATION ACCOUNT
+                                                    // amg bayad man day japun dri sa creation para dli nalang ta ma
+                                                    // balaka if ma hurot ila tas mag create ra silag bag o
+                                                }
+
+                                                if (yeah5 == true) {// mekus^2 ranig input
+
+                                                    while (true) {
+                                                        System.out.print(
+                                                                "Enter Your Name [Last Name, First name and Middlename]: ");
+                                                        String testENAME = string.nextLine();
+
+                                                        boolean proceedCREATE = true;
+                                                        for (int i = 0; i < recAccLength; i++) {
+                                                            if (testENAME.equalsIgnoreCase(recAccName[i])) {
+                                                                System.out.println("THIS NAME ALREADY EXIST!..\n ");
+                                                                proceedCREATE = false;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (proceedCREATE == false) {
+                                                            continue;
+                                                        }
+
+                                                        recAccName[recAccLength] = testENAME;
+                                                        break;
+                                                    }
+
+                                                    recAccUsernames[recAccLength] = checkRecAccUsername;
+                                                    recAccPasswords[recAccLength] = checkRecPassword;
+                                                    recAccChance[recAccLength] += jobPostLimit;
+
+                                                    accountsR.println("\n-------------------------");
+                                                    accountsR.println("Username: " + recAccUsernames[recAccLength]);
+                                                    accountsR.println("Password: " + recAccPasswords[recAccLength]);
+
+                                                    recAccLength++;
+
+                                                    System.out.println("RECRUITERS ACCOUNT CREATED SUCCESSULY...\n");
+                                                    break;
+                                                }
+
+                                            }
+                                            continue;
+
+                                        case 2:
+
+                                            while (true) {
+
+                                                try {
+
+                                                    System.out.println("\n----DELETE JOB RECRUITERS ACCOUNT----");
+                                                    System.out.print("Enter usernmae to delete: ");// checker
+                                                    String checUserName = string.nextLine();
+
+                                                    boolean searchRecAcc = false;
+                                                    int indexDJRA = -1;
+
+                                                    for (int i = 0; i < recAccLength; i++) {
+                                                        if (checUserName.equalsIgnoreCase(recAccUsernames[i])) {// isa
+                                                                                                                // isahon
+                                                                                                                // iya
+                                                                                                                // mga
+                                                                                                                // acocunt
+                                                                                                                // nila
+                                                                                                                // if ma
+                                                                                                                // reda
+                                                                                                                // e
+                                                                                                                // delete
+
+                                                            indexDJRA = i;
+                                                            searchRecAcc = true;
+
+                                                            break;
+                                                        }
+
+                                                    }
+
+                                                    if (searchRecAcc == false) {// if walay nakita
+                                                        System.out.println("ACCOUNT NOT FOUND!...");
+                                                        System.out.println("TYPE 1 to Try Again");
+                                                        System.out.println("TYPE 2 or any to return");
+                                                        System.out.print("YOUR CHOICE: ");
+                                                        String choiceSRA = string.nextLine();
+
+                                                        if ("1".equals(choiceSRA)) {
+                                                        } else if ("2".equals(choiceSRA)) {
+                                                            break;
+                                                        } else {
+                                                            System.out.println("Please Enter 1 to 2 only!\n");
+                                                        }
+
+                                                    } else if (searchRecAcc == true) {
+
+                                                        for (int i = 0; i < lengthACC; i++) {// problemado kayu hantud
+                                                                                             // next loop sa baba haha
+                                                            for (int j = 0; j < invLength[i]; j++) {
+                                                                if (jobEmployerInv[i][j]
+                                                                        .equalsIgnoreCase(recAccName[indexDJRA])) {
+
+                                                                    jobNameInv[i][j] = null;
+                                                                    jobIndustryInv[i][j] = null;
+                                                                    jobEmployerInv[i][j] = null;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        int[] newInvLength = new int[100];
+                                                        String[][] newJobNameInv = new String[100][100];
+                                                        String[][] newJobIndustryInv = new String[100][100];
+                                                        String[][] newJobEmployerInv = new String[100][100];
+
+                                                        for (int i = 0; i < lengthACC; i++) {
+
+                                                            int aFOUND = 0;
+
+                                                            for (int j = 0; j < invLength[i]; j++) {
+
+                                                                if (jobEmployerInv[i][j] != null) {
+
+                                                                    newJobNameInv[i][aFOUND] = jobNameInv[i][j];
+                                                                    newJobIndustryInv[i][aFOUND] = jobIndustryInv[i][j];
+                                                                    newJobEmployerInv[i][aFOUND] = jobEmployerInv[i][j];
+
+                                                                    jobNameInv[i][j] = null;
+                                                                    jobIndustryInv[i][j] = null;
+                                                                    jobEmployerInv[i][j] = null;
+
+                                                                    aFOUND++;
+                                                                }
+
+                                                            } // wala pa diay ni na test for other accounts
+
+                                                            newInvLength[i] = aFOUND;
+                                                        }
+
+                                                        for (int i = 0; i < lengthACC; i++) {
+
+                                                            invLength[i] = newInvLength[i];
+
+                                                            for (int j = 0; j < newInvLength[i]; j++) {
+
+                                                                jobNameInv[i][j] = newJobNameInv[i][j];
+                                                                jobIndustryInv[i][j] = newJobIndustryInv[i][j];
+                                                                jobEmployerInv[i][j] = newJobEmployerInv[i][j];
+
+                                                            }
+                                                        }
+                                                        // DELETE TUNG MGA GIPANG HIRE NIYA
+                                                        for (int i = 0; i < lengthACC; i++) {
+
+                                                            if (hiredBy[i].equals(recAccName[indexDJRA])) {
+                                                                status[i] = false;
+                                                                hiredJob[i] = null;
+                                                                hiredIndustry[i] = null;
+                                                                hiredBy[i] = null;
+                                                            }
+
+                                                        }
+                                                        // DELETE TUNG MGA JIPANG INTERVIEW NIYA
+
+                                                        for (int i = 0; i < lengthACC; i++) {
+
+                                                            if (interBy[i].equals(recAccName[indexDJRA])) {
+
+                                                                statusInterview[i] = false;
+                                                                hiredJob[i] = null;
+                                                                interTime[i] = null;
+                                                                gmeetLink[i] = null;
+                                                                interJob[i] = null;
+                                                                interIndustry[i] = null;
+                                                                interBy[i] = null;
+
+                                                            }
+
+                                                        }
+
+                                                        for (int i = 0; i < cit[0].length; i++) {
+                                                            for (int j = 0; j < cit[0][1][2].length; j++) {
+
+                                                                cit[indexDJRA][i][0][j] = null;
+                                                                cit[indexDJRA][i][1][j] = null;
+                                                                cit[indexDJRA][i][2][j] = null;
+                                                                cit[indexDJRA][i][3][j] = null;
+
+                                                                citNum[indexDJRA][i][0][j] = 0;
+                                                                citNum[indexDJRA][i][1][j] = 0;
+                                                                citNum[indexDJRA][i][2][j] = 0;
+
+                                                            }
+                                                        }
+
+                                                        citLength[indexDJRA] = 0;
+
+                                                        for (int i = indexDJRA; i < recAccLength; i++) {
+
+                                                            if (i == recAccLength - 1) {// iff an a sa tumoy e null/0
+                                                                                        // lang par a dele mo out of
+                                                                                        // bounds ang index
+                                                                recAccUsernames[i] = null;
+                                                                recAccPasswords[i] = null;
+                                                                recAccName[i] = null;
+
+                                                                break;
+                                                            }
+                                                            // e sibog^2 rana sila tanan pa left
+                                                            recAccUsernames[i] = recAccUsernames[i + 1];
+                                                            recAccPasswords[i] = recAccPasswords[i + 1];
+                                                            recAccName[i] = recAccName[i + 1];
+
+                                                        }
+
+                                                        System.out
+                                                                .println("\nDELETED RECRUITERS ACCOUNT SUCCESSFULLY\n");
+                                                        recAccLength--;
+
+                                                        break;
+                                                    }
+
+                                                    // TO DO!!!!!
+                                                    // E consider og delete tung mga jobs nga gipang post
+                                                    // apil ang mga gipang hire nimo
+                                                } catch (Exception e) {
+                                                    System.out.println("Erroe Occured");
+                                                }
+                                            }
+                                            continue;
+
+                                        case 3:
+
+                                            while (true) {
+                                                System.out.println("----DELETE EMPLOYEES ACCOUNT----");
+                                                System.out.print("Enter Username to delete: ");// dele final checker ra
+                                                String testUserName = string.nextLine();
+
+                                                boolean yeah = false;
+
+                                                int indexDEA = -1;
+                                                for (int i = 0; i < lengthACC; i++) {
+                                                    if (testUserName.equalsIgnoreCase(usernames[i])) {// e cehck isa^2
+                                                                                                      // then if naay na
+                                                                                                      // read kwaon ang
+                                                                                                      // idnex kung asa
+                                                                                                      // siya
+
+                                                        indexDEA = i;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (indexDEA != -1) {// if na rewrite or naay nakita
+                                                    for (int i = indexDEA; i < lengthACC; i++) {
+
+                                                        if (i == lengthACC - 1) {// if na reach an ang last, e null/0
+                                                                                 // lang para dli mag out of bounds ang
+                                                                                 // index
+
+                                                            yeah = true;
+
+                                                            usernames[i] = null;
+                                                            passwords[i] = null;
+                                                            firstName[i] = null;
+                                                            middleName[i] = null;
+                                                            lastName[i] = null;
+                                                            age[i] = 0;
+                                                            sex[i] = null;
+                                                            address[i] = null;
+                                                            email[i] = null;
+                                                            phone[i] = 0;
+                                                            educAtt[i] = 0;// maunsa kaya ni no haha
+                                                            workExp[i] = null;
+                                                            carObjective[i] = null;
+                                                            strenghts[i] = null;
+
+                                                            break;
+                                                        }
+                                                        // sibog^2 rani pa left
+                                                        usernames[i] = usernames[i + 1];
+                                                        passwords[i] = passwords[i + 1];
+                                                        firstName[i] = firstName[i + 1];
+                                                        middleName[i] = middleName[i + 1];
+                                                        lastName[i] = lastName[i + 1];
+                                                        age[i] = age[i + 1];
+                                                        sex[i] = sex[i] + 1;
+                                                        address[i] = address[i + 1];
+                                                        email[i] = email[i + 1];
+                                                        phone[i] = phone[i + 1];
+                                                        educAtt[i] = educAtt[i + 1];
+                                                        workExp[i] = workExp[i + 1];
+                                                        carObjective[i] = carObjective[i + 1];
+                                                        strenghts[i] = strenghts[i + 1];
+
+                                                    }
+
+                                                    status[indexDEA] = false;// delete hire
+                                                    hiredJob[indexDEA] = null;
+                                                    hiredIndustry[indexDEA] = null;
+                                                    hiredBy[indexDEA] = null;
+
+                                                    sentApp[indexDEA] = 0;
+
+                                                    for (int i = 0; i < sentJobName.length; i++) {// delete sent
+                                                                                                  // application
+
+                                                        employerName[indexDEA][i] = null;
+                                                        industry[indexDEA][i] = 0;
+                                                        sentJobName[indexDEA][i] = null;
+
+                                                    }
+
+                                                    for (int i = 0; i < invLength[indexDEA]; i++) {
+
+                                                        jobNameInv[indexDEA][i] = null;
+                                                        jobIndustryInv[indexDEA][i] = null;
+                                                        jobEmployerInv[indexDEA][i] = null;
+
+                                                    }
+
+                                                    invLength[indexDEA] = 0;
+
+                                                    statusInterview[indexDEA] = false;
+                                                    interTime[indexDEA] = null;
+                                                    gmeetLink[indexDEA] = null;
+                                                    interJob[indexDEA] = null;
+                                                    interIndustry[indexDEA] = null;
+                                                    interBy[indexDEA] = null;
+
+                                                }
+
+                                                if (yeah == false) {
+                                                    System.out.println("ACCOUNT DOESNT EXIST!..\n");
+                                                    System.out.println("TYPE 1 to try Again");
+                                                    System.out.println("TYPE 2 or any to RETURN");
+                                                    System.out.print("YOUR CHOICE: ");
+                                                    String choiceDEA = string.nextLine();
+
+                                                    if ("1".equals(choiceDEA)) {
+                                                        continue;
+                                                    } else if ("2".equals(choiceDEA)) {
+                                                        break;
+                                                    } else {
+                                                        System.out.println("Please input 1 to 2 only\n");
+                                                        continue;
+                                                    }
+                                                }
+                                                System.out.println("\nACCOUNT DELETED SUCCESSFULLY!");
+                                                lengthACC--;
+                                                break;
+
+                                            }
+
+                                            // TO DO!!!!!(DONE)
+                                            // consisder og deelte tung gipamng send nimo na applications
+                                            // og ang statuses like hired or interview
+                                            continue;
+                                        case 4:
+                                            while (true) {// dali rani
+                                                try {
+                                                    System.out.println("-EXTEND CURRENT POST LENGTH-");
+                                                    System.out.println("CURRENT LENGTH: " + jobPostLimit);
+                                                    System.out.print("SET NEW LENGTH: ");
+                                                    jobPostLimit = num.nextInt();
+                                                    System.out.println("LENGTH UPDATED SUCCESSFULY!..");
+                                                    break;
+                                                } catch (Exception e) {
+                                                    System.out.println("Only numbers are allowed!\n");
+                                                    num.nextLine();
+                                                }
+                                            }
+                                            continue;
+                                        case 5:
+
+                                            while (true) {// para sa mga crimnals ni
+                                                try {
+                                                    System.out.println("\n---WANTED LIST---");
+                                                    System.out.println("1. CHECK WANTED LIST");
+                                                    System.out.println("2. SCAN FOR WANTED EMPLOYEES");
+                                                    System.out.println("3. DELETE WANTED EMPLOYEE");
+                                                    System.out.println("4. TO EXIT");
+                                                    System.out.print("ENTER YOUR CHOICE: ");
+                                                    int choices55 = num.nextInt();
+
+                                                    boolean yeah55 = false;
+
+                                                    if (choices55 == 1) {
+                                                        System.out.println("\n-WANTED LIST-");// output mga wanted
+                                                        for (int i = 0; i < wantedLength; i++) {
+
+                                                            if (wantedFirstname[i] != null
+                                                                    && wantedLastname[i] != null) {
+
+                                                                System.out.println((i + 1) + ". " + wantedFirstname[i]
+                                                                        + " " + wantedLastname[i]);
+                                                                yeah55 = true;
+                                                            }
+
+                                                        }
+                                                    } else if (choices55 == 2) {// output mga wanted pero e comapre sa
+                                                                                // sa mga employees then if naa dra pa e
+                                                                                // output
+                                                        System.out.println("\n-WANTED EMPLOYEES-");
+                                                        for (int i = 0; i < wantedLength; i++) {
+                                                            for (int j = 0; j < lengthACC; j++) {
+                                                                if (wantedFirstname[i].equalsIgnoreCase(firstName[j])
+                                                                        && wantedLastname[i]
+                                                                                .equalsIgnoreCase(lastName[j])) {
+                                                                    System.out.println((i + 1) + ". " + firstName[j]
+                                                                            + " " + lastName[j]);
+                                                                    yeah55 = true;
+                                                                }
+                                                            }
+                                                        }
+
+                                                    } else if (choices55 == 3) {// delete
+                                                        System.out.println("\n-DELETE LISTED  WANTED -");
+                                                        System.out.print("ENTER THE FIRSTNAME: ");// dele final
+                                                        String checkwantedFirstName = string.nextLine();
+                                                        System.out.print("ENTER THE LASTNAME: ");// dele final
+                                                        String checkwantedLastName = string.nextLine();
+
+                                                        int indexDLW = -1;// e check asa tu na index nakita ang wanted
+                                                                          // or asa na butang
+
+                                                        for (int i = 0; i < wantedLength; i++) {// checl asa
+                                                            if (wantedFirstname[i]
+                                                                    .equalsIgnoreCase(checkwantedFirstName)
+                                                                    && wantedLastname[i]
+                                                                            .equalsIgnoreCase(checkwantedLastName)) {
+                                                                indexDLW = i;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (indexDLW != -1) {// if na read
+                                                            for (int i = indexDLW; i < wantedLength; i++) {
+
+                                                                if (i == wantedLength - 1) {// if na reached na sa last
+                                                                                            // e null/0 nalang para dle
+                                                                                            // mo out of bounds
+                                                                    wantedFirstname[i] = null;
+                                                                    wantedLastname[i] = null;
+                                                                    break;
+
+                                                                }
+                                                                // mekus^2 ranig sibog pa left
+                                                                wantedFirstname[i] = wantedFirstname[i + 1];
+                                                                wantedLastname[i] = wantedLastname[i + 1];
+                                                            }
+                                                        } else if (indexDLW == -1) {// else if wla na read
+                                                            System.out.println("WANTED EMPLPYEE DOESNT EXIST!\n");
+                                                            continue;
+                                                        }
+                                                        wantedLength--;// minusan ang length sa mga wanted
+                                                        System.out.println("WANTED LIST DELETED SUCCESSFULY!\n");
+
+                                                        continue;
+                                                    } else if (choices55 == 4) {
+                                                        break;
+                                                    } else {
+                                                        System.out.println("Enter 1 to 4 Only");
+                                                        continue;
+                                                    }
+
+                                                    if (yeah55 == false) {
+                                                        System.out.println("THERES NO WANTED EMPLOYEES YET!\n");
+                                                    }
+
+                                                } catch (Exception e) {
+                                                    System.out.println("Only integers are allowed!\n");
+                                                    num.nextLine();
+                                                }
+                                            }
+
+                                            continue;
+                                        case 6:
+                                            // mekus^2 ranig input dria
+                                            System.out.println("\n---ADD WANTED PERSON---");
+                                            System.out.print("FIRST NAME: ");
+                                            wantedFirstname[wantedLength] = string.nextLine();
+                                            System.out.print("LASTNAME: ");
+                                            wantedLastname[wantedLength] = string.nextLine();
+                                            wantedLength++;
+                                            System.out.println("WANTED PERSON ADDED SUCCESSFULLY!\n");
+
+                                            continue;
+                                        case 7:
+
+                                            System.out.println("\n---SENT APPLICATIONS---");
+
+                                            boolean sent = false;
+
+                                            for (int i = 0; i < lengthACC; i++) {
+                                                for (int j = 0; j < sentApp[i]; j++) {
+
+                                                    System.out.println("\n-----------------------------");
+                                                    System.out.println("\tAPPLICANT: " + lastName[i].toUpperCase()
+                                                            + ", " + firstName[i].toUpperCase() + " "
+                                                            + middleName[i].toUpperCase());
+                                                    System.out
+                                                            .println("\tJOB NAME: " + sentJobName[i][j].toUpperCase());
+                                                    System.out.println(
+                                                            "\tPOSTED BY: " + employerName[i][j].toUpperCase());
+                                                    System.out.println("\tINDUSTRY: " + industryShort[industry[i][j]]);
+                                                    System.out.print("\tSTATUS: ");
+                                                    if (status[i] == true) {
+                                                        System.out.println("HIRED");
+                                                    } else {
+                                                        System.out.println("NOT HIRED");
+                                                    } // add pa kaya dri if interview no haha di nalang
+
+                                                    sent = true;
+                                                }
+                                            }
+
+                                            if (sent == false) {
+                                                System.out.println("No Application sent yet!...\n");
+                                            } else if (sent == true) {
+                                                System.out.println("\n-----------------------------");
+                                                System.out.println("1. Type 1 filter only hired employees");
+                                                System.out.println("2. Type 2 to filter employees not hired yet");
+                                                System.out.println("3. Type 3 or ANY to RETURN");
+                                                System.out.print("YOUR CHOICE: ");
+                                                String choiceFil = string.nextLine();
+
+                                                if ("1".equals(choiceFil)) {
+
+                                                    boolean sent2 = false;
+
+                                                    for (int i = 0; i < lengthACC; i++) {
+                                                        for (int j = 0; j < sentApp[i]; j++) {
+
+                                                            if (status[i] == true) {
+                                                                System.out.println(
+                                                                        "\n-------------HIRED----------------");
+                                                                System.out.println(
+                                                                        "\tAPPLICANT: " + lastName[i].toUpperCase()
+                                                                                + ", " + firstName[i].toUpperCase()
+                                                                                + " " + middleName[i].toUpperCase());
+                                                                System.out.println("\tJOB NAME: "
+                                                                        + sentJobName[i][j].toUpperCase());
+                                                                System.out.println("\tPOSTED BY: "
+                                                                        + employerName[i][j].toUpperCase());
+                                                                System.out.println(
+                                                                        "\tINDUSTRY: " + industryShort[industry[i][j]]);
+
+                                                                sent2 = true;
+                                                            }
+
+                                                        }
+                                                    }
+                                                    if (sent2 == false) {
+                                                        System.out.println("\nNO HIRED EMPLOYEES YET!..\n");
+                                                    }
+
+                                                } else if ("2".equals(choiceFil)) {
+
+                                                    boolean sent3 = false;
+
+                                                    for (int i = 0; i < lengthACC; i++) {
+                                                        for (int j = 0; j < sentApp[i]; j++) {
+
+                                                            if (status[i] == false) {
+                                                                System.out.println(
+                                                                        "\n------------NOT HIRED-----------------");
+                                                                System.out.println(
+                                                                        "\tAPPLICANT: " + lastName[i].toUpperCase()
+                                                                                + ", " + firstName[i].toUpperCase()
+                                                                                + " " + middleName[i].toUpperCase());
+                                                                System.out.println("\tJOB NAME: "
+                                                                        + sentJobName[i][j].toUpperCase());
+                                                                System.out.println("\tPOSTED BY: "
+                                                                        + employerName[i][j].toUpperCase());
+                                                                System.out.println(
+                                                                        "\tINDUSTRY: " + industryShort[industry[i][j]]);
+
+                                                                sent3 = true;
+                                                            }
+
+                                                        }
+                                                    }
+                                                    if (sent3 == false) {
+                                                        System.out.println("\nALL ARE HIRED..\n");
+                                                    }
+
+                                                } else {
+                                                    continue;
+                                                }
+
+                                            }
+
+                                            continue;
+                                        case 8:
+                                            System.out.println("\n-----------RECRUITERS ACCOUNT-----------");
+                                            if (recAccLength == 0) {
+                                                System.out.println("NO ACCOUNT YET!..\n");
+                                                continue;
+                                            }
+
+                                            for (int i = 0; i < recAccLength; i++) {
+
+                                                System.out.println("\n\tUSERNAME: " + recAccUsernames[i]);
+                                                System.out.println("\tPASSWORD: " + recAccPasswords[i]);
+                                                System.out.println("\tNAME: " + recAccName[i]);
+                                                System.out.println("\t------------------------");
+
+                                            }
+
+                                            System.out.println("\nTOTAL: " + recAccLength);
+
+                                            continue;
+                                        case 9:
+                                            System.out.println("\n-----------JOB HUNTERS ACCOUNT-----------");
+                                            if (lengthACC == 0) {
+                                                System.out.println("NO ACCOUNT YET!..\n");
+                                                continue;
+                                            }
+
+                                            for (int i = 0; i < lengthACC; i++) {
+
+                                                System.out.println("\n\tUSERNAME: " + usernames[i]);
+                                                System.out.println("\tPASSWORD: " + passwords[i]);
+                                                System.out.println("\tNAME: " + lastName[i] + ", " + firstName[i]
+                                                        + middleName[i].charAt(0));
+                                                System.out.println("\t------------------------");
+
+                                            }
+
+                                            System.out.println("\nTOTAL: " + lengthACC);
+
+                                            continue;
+                                        case 10:
+
+                                            System.out.println("\n-----------PROFIT-----------");
+                                            System.out.println("\tBALANCE: " + profit);
+                                            System.out.println();
+                                            continue;
+                                        case 0:
+
+                                            System.out.println("\nLOGGED OUT SUCCESSFULLY!\n");
+                                            adminStat = false;
+                                            break;
+                                        default:
+                                            System.out.println("Please input integers ranging only from 0 to 10");
+                                            continue;
+
+                                    }
+                                    break;
+                                }
+
+                            } catch (Exception e) {
+                                System.out.println("Only Integers are Allowed!\n");
+                                num.nextLine();
+                            }
+
+                        }
+                        break;
+
+                    case 0:
+                        System.out.println("\n\nTHANKS FOR USING OUR SYSTEM");
+                        realTime.println("\tSYSTEM CLOSED: " + currentTime);
+                        realTime.println("------------------------------------------------------");
+
+                        num.close();
+                        string.close();
+                        accountsR.close();
+                        accountsE.close();
+                        accountHE.close();
+                        realTimeW.close();
+                        realTime.close();
+                        break;
+
+                    default:
+                        System.out.println("Only Integers that range from 0 to 5\n");
+                        break;
+
+                }
+
+            } catch (Exception e) {
+                System.out.println("Only Integers are allowed");
+                num.nextLine();
+            }
+
+        }
+
+    }
+}
+// TO CONSIDER (IMPORTANT)
+// (done) dapat diay kunware daghag nag hire sa imoha, instead mag ire ang isa
+// paunhanay, e store nalang sila sa array then papilion ang employee aas didto
+// na hiring iyang pilion
+// during deletion sa accounts both recruiters og hunters, e apil pud tung
+// gipang post nila, applyan, gipang hired/inteview, etc as long as conencted
+// sila.
+// (done)dapat maka cancel og sent applications
+// maka leave pud sa job
+// show hired persons
+// cancel^2
+
+// if mag deelte og employers account dapat apil ialng jobs then ang mga hired
+// ato is e unhire.
+// show all applicatns/employers account
+// dapat after send og hiring confirmation, dapat ka isa ra para way conflict.
+// dapat if same og name (e enable nalang ni) dapat ma read ang bith dli mo
+// break line then e store ang mga na read then e sulod s astring then papilion
+// asa ato ang gusto sa nag apply
+// dapat naay mga instruction each case....(impoertant)
+// (done)add remove hiring sent invitation
+
+// naa dau koi mali sa cit ahaha dapat e consider ang cit length sa iyang
+// industry haha.
